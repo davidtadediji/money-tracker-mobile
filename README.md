@@ -1,50 +1,81 @@
-# Welcome to your Expo app 👋
+# 💸 Money Tracker Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Money Tracker Mobile** is a smart, semi-automated personal finance app designed to help users **track expenses**, **monitor balances**, and **stay financially organized** — even in regions where automated bank integrations (like Plaid) aren’t supported.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Overview
 
-   ```bash
-   npm install
-   ```
+Managing money shouldn’t be complicated. **Money Tracker Mobile** combines the flexibility of **manual entry** with the convenience of **automation**, offering a seamless way to record, monitor, and understand your spending habits.
 
-2. Start the app
+By blending technologies such as **OCR**, **voice recognition**, and **location-based reminders**, the app ensures that every expense is captured — no matter where or how you spend.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## ✨ Key Features
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 🧾 Semi-Automated Expense Entry
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Easily record transactions through multiple smart methods:
 
-## Get a fresh project
+* **OCR (Optical Character Recognition)** – Scan receipts and automatically extract expense details.
+* **Screenshot & Share-to-App** – Share your digital receipts or payment confirmations directly into the app for quick logging.
+* **Voice Entry** – Speak your expenses, and let the app intelligently record them for you.
 
-When you're ready, run:
+### 🔔 Smart Reminders
 
-```bash
-npm run reset-project
-```
+Never forget to track an expense again:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+* **Regular Notifications** – Gentle reminders to enter recent transactions.
+* **Location-Based Alerts** – Automatically prompt users to log expenses when leaving common spending locations like supermarkets or restaurants.
 
-## Learn more
+### 🌍 Universal Compatibility
 
-To learn more about developing your project with Expo, look at the following resources:
+Unlike apps dependent on banking APIs (such as Plaid), **Money Tracker Mobile** works **anywhere in the world**, providing a consistent and reliable financial tracking experience regardless of your bank or region.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 🧠 Why It Matters
 
-Join our community of developers creating universal apps.
+Many users around the world lack access to apps that automatically connect to local banks. **Money Tracker Mobile** bridges this gap by blending **manual precision** with **AI-powered automation**, empowering users to stay financially aware without relying on third-party bank integrations.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🛠️ Tech Stack (Proposed)
+
+* **Framework:** React Native / Expo
+* **Backend:** Firebase or Supabase
+* **AI/ML Services:** Google Cloud Vision (OCR), Whisper / Speech-to-Text API (Voice Input)
+* **Notifications:** Expo Notifications & Geofencing API
+* **Storage:** SQLite or Cloud Sync with Firebase
+
+---
+
+## 🎯 Vision
+
+To create a **universal personal finance companion** that’s simple, intuitive, and intelligent — making financial tracking effortless for anyone, anywhere.
+
+---
+
+## 📅 Roadmap
+
+**Phase 1:** Core Expense Tracking
+
+* Manual entry and receipt scanning
+* Local database setup
+
+**Phase 2:** Smart Inputs & Automation
+
+* Voice and share-to-app functionality
+* Reminders system
+
+**Phase 3:** Intelligence & Insights
+
+* Spending trends visualization
+* Predictive analytics and budget suggestions
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Whether it’s improving OCR accuracy, enhancing UX, or optimizing data flow — your help makes **Money Tracker Mobile** even better.
