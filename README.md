@@ -1,20 +1,35 @@
 # 💸 Money Tracker Mobile
 
-**Money Tracker Mobile** is a smart, semi-automated personal finance app designed to help users **track expenses**, **monitor balances**, and **stay financially organized** — even in regions where automated bank integrations (like Plaid) aren’t supported.
+**Money Tracker Mobile** is a comprehensive financial tracking app that provides a **balance sheet view** of your finances with detailed inflow and outflow monitoring across different time periods.
 
 ---
 
 ## 🚀 Overview
 
-Managing money shouldn’t be complicated. **Money Tracker Mobile** combines the flexibility of **manual entry** with the convenience of **automation**, offering a seamless way to record, monitor, and understand your spending habits.
-
-By blending technologies such as **OCR**, **voice recognition**, and **location-based reminders**, the app ensures that every expense is captured — no matter where or how you spend.
+Managing money shouldn't be complicated. **Money Tracker Mobile** offers a clear view of your financial health through a dynamic balance sheet approach, tracking both income and expenses across daily, weekly, monthly, and yearly timeframes.
 
 ---
 
 ## ✨ Key Features
 
-### 🧾 Semi-Automated Expense Entry
+### 📊 Balance Sheet Overview
+
+Track your finances with precision:
+
+* **Cash Flow Dashboard** – See your net position with clear inflow vs outflow visualizations
+* **Multi-timeframe Analysis** – View financial movements across daily, weekly, monthly, and yearly periods
+* **Category-based Tracking** – Separate tracking for income sources and expense categories
+* **Running Balance** – Real-time updates of your current financial position
+
+### 💰 Smart Financial Flows
+
+Comprehensive tracking of money movements:
+
+* **Income Tracking** – Record regular salary, freelance income, investments, and other revenue streams
+* **Expense Categories** – Organize outflows by fixed costs, variable expenses, and discretionary spending
+* **Recurring Transactions** – Set up regular income and expense entries for consistent tracking
+
+### 🧾 Semi-Automated Entry
 
 Easily record transactions through multiple smart methods:
 
@@ -22,16 +37,14 @@ Easily record transactions through multiple smart methods:
 * **Screenshot & Share-to-App** – Share your digital receipts or payment confirmations directly into the app for quick logging.
 * **Voice Entry** – Speak your expenses, and let the app intelligently record them for you.
 
-### 🔔 Smart Reminders
+### 📈 Financial Insights
 
-Never forget to track an expense again:
+Deep understanding of your finances:
 
-* **Regular Notifications** – Gentle reminders to enter recent transactions.
-* **Location-Based Alerts** – Automatically prompt users to log expenses when leaving common spending locations like supermarkets or restaurants.
-
-### 🌍 Universal Compatibility
-
-Unlike apps dependent on banking APIs (such as Plaid), **Money Tracker Mobile** works **anywhere in the world**, providing a consistent and reliable financial tracking experience regardless of your bank or region.
+* **Cash Flow Analysis** – Track your net position over time
+* **Trend Detection** – Identify patterns in income and spending
+* **Budget vs Actual** – Compare planned versus actual financial flows
+* **Future Projections** – Forecast future balances based on historical data
 
 ---
 
@@ -44,7 +57,9 @@ Many users around the world lack access to apps that automatically connect to lo
 ## 🛠️ Tech Stack (Proposed)
 
 * **Framework:** React Native / Expo
-* **Backend:** Firebase or Supabase
+* **Database:** SQLite with cloud sync
+* **State Management:** Redux for complex financial calculations
+* **Visualization:** React Native Charts
 * **AI/ML Services:** Google Cloud Vision (OCR), Whisper / Speech-to-Text API (Voice Input)
 * **Notifications:** Expo Notifications & Geofencing API
 * **Storage:** SQLite or Cloud Sync with Firebase
@@ -59,20 +74,23 @@ To create a **universal personal finance companion** that’s simple, intuitive,
 
 ## 📅 Roadmap
 
-**Phase 1:** Core Expense Tracking
+**Phase 1:** Core Balance Sheet Framework
 
-* Manual entry and receipt scanning
-* Local database setup
+* Balance sheet structure implementation
+* Multi-timeframe tracking setup
+* Basic inflow/outflow recording
 
-**Phase 2:** Smart Inputs & Automation
+**Phase 2:** Advanced Financial Tracking
 
-* Voice and share-to-app functionality
-* Reminders system
+* Recurring transaction automation
+* Balance projections
+* Category management
 
 **Phase 3:** Intelligence & Insights
 
-* Spending trends visualization
-* Predictive analytics and budget suggestions
+* Cash flow analysis and reporting
+* Trend visualization
+* Budget planning tools
 
 ---
 
