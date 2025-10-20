@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
@@ -10,6 +11,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
 export default function TabTwoScreen() {
+  const router = useRouter();
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -21,7 +23,7 @@ export default function TabTwoScreen() {
           style={styles.headerImage}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
+      <ThemedView style={styles.titleRow}>
         <ThemedText
           type="title"
           style={{
@@ -29,6 +31,14 @@ export default function TabTwoScreen() {
           }}>
           Explore
         </ThemedText>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          accessibilityRole="button"
+          onPress={() => router.push('/transactions/add')}
+          style={styles.primaryButton}
+        >
+          <Text style={styles.primaryButtonText}>Add Transaction</Text>
+        </TouchableOpacity>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
@@ -105,8 +115,16 @@ const styles = StyleSheet.create({
     left: -35,
     position: 'absolute',
   },
-  titleContainer: {
+  titleRow: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
+  primaryButton: {
+    backgroundColor: '#111',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+  },
+  primaryButtonText: { color: '#fff', fontWeight: '600' },
 });
