@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 /*
 // Google Auth (Expo AuthSession) — stub/example
@@ -46,22 +46,90 @@ export default function LoginScreen() {
   };
 
   return (
-    <View>
-      <Text>Login</Text>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Login" onPress={handleLogin} />
-      <View style={{ height: 12 }} />
-      <Button title="Continue with Google" onPress={() => console.log('Login with Google') } />
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Welcome back</Text>
+        <Text style={styles.subtitle}>Log in to track your cash flow and balance</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholderTextColor="#777"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          placeholderTextColor="#777"
+        />
+
+        <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+          <Text style={styles.primaryButtonText}>Log In</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => console.log('Login with Google')}
+        >
+          <Text style={styles.secondaryButtonText}>Continue with Google</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#f7f7f7',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  title: { fontSize: 22, fontWeight: '700', marginBottom: 4 },
+  subtitle: { fontSize: 14, color: '#666', marginBottom: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 12,
+    backgroundColor: '#fafafa',
+  },
+  primaryButton: {
+    backgroundColor: '#111',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  primaryButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  secondaryButton: {
+    borderColor: '#111',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  secondaryButtonText: { color: '#111', fontWeight: '600', fontSize: 16 },
+});
