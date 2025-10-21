@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Switch,
+  TouchableOpacity,
+  StyleSheet,
+  Button,
+} from "react-native";
 
 export default function PreferencesScreen() {
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState("USD");
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [ocrEnabled, setOcrEnabled] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [timeframe, setTimeframe] = useState<
+    "daily" | "weekly" | "monthly" | "yearly"
+  >("monthly");
 
   const handleSave = () => {
-    console.log('Preferences saved', {
+    console.log("Preferences saved", {
       currency,
       darkMode,
       notifications,
@@ -58,13 +68,18 @@ export default function PreferencesScreen() {
       <View style={styles.group}>
         <Text style={styles.label}>Default Timeframe</Text>
         <View style={styles.chips}>
-          {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((tf) => (
+          {(["daily", "weekly", "monthly", "yearly"] as const).map((tf) => (
             <TouchableOpacity
               key={tf}
               style={[styles.chip, timeframe === tf && styles.chipActive]}
               onPress={() => setTimeframe(tf)}
             >
-              <Text style={[styles.chipText, timeframe === tf && styles.chipTextActive]}>
+              <Text
+                style={[
+                  styles.chipText,
+                  timeframe === tf && styles.chipTextActive,
+                ]}
+              >
                 {tf.charAt(0).toUpperCase() + tf.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -79,15 +94,31 @@ export default function PreferencesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, gap: 16 },
-  header: { fontSize: 20, fontWeight: '600' },
+  header: { fontSize: 20, fontWeight: "600" },
   group: { gap: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8 },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+  },
   label: { fontSize: 16 },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#ccc' },
-  chipActive: { backgroundColor: '#111', borderColor: '#111' },
-  chipText: { color: '#111' },
-  chipTextActive: { color: '#fff' },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  chipActive: { backgroundColor: "#111", borderColor: "#111" },
+  chipText: { color: "#111" },
+  chipTextActive: { color: "#fff" },
 });
-
