@@ -6,7 +6,7 @@ const isLoggedIn = true; // mock flag
 
 export default function Index() {
   if (isLoggedIn) {
-    return <Redirect href="/(tabs)/explore" />;
+    return <Redirect href="/(tabs)" />;
   }
   return <Landing />;
 }
