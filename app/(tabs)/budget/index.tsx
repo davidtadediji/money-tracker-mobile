@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 export default function BudgetIndex() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <Text style={styles.title}>Budget Overview</Text>
       <Text style={styles.subtitle}>Plan your spending limits by category.</Text>
 
@@ -21,7 +22,7 @@ export default function BudgetIndex() {
         <Text style={styles.sectionTitle}>Your Budgets</Text>
         <Text style={styles.placeholder}>No budgets yet.</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

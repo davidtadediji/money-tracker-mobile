@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 type Txn = { id: string; amount: number; category: string; type: 'inflow' | 'outflow' };
@@ -13,7 +14,7 @@ export default function TransactionsIndex() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.headerRow}>
         <Text style={styles.title}>Transactions</Text>
         <TouchableOpacity
@@ -42,7 +43,7 @@ export default function TransactionsIndex() {
         ListEmptyComponent={<Text style={styles.placeholder}>No transactions yet.</Text>}
         contentContainerStyle={{ paddingVertical: 8 }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
