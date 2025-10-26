@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Txn = { id: string; amount: number; category: string; type: 'inflow' | 'outflow'; date: string };
 
@@ -111,21 +111,23 @@ export default function DashboardScreen() {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Recent Transactions</Text>
       </View>
-      <FlatList
-        data={recent}
-        keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => router.push(`/(tabs)/transactions/${item.id}`)}>
-            <Text style={styles.itemTitle}>
-              {item.type === 'inflow' ? '+' : '-'}{item.amount}
-            </Text>
-            <Text style={styles.itemSubtitle}>{item.category}</Text>
-          </TouchableOpacity>
+      <View style={{ paddingVertical: 8 }}>
+        {recent.length > 0 ? (
+          recent.map((item, index) => (
+            <View key={item.id}>
+              {index > 0 && <View style={styles.separator} />}
+              <TouchableOpacity style={styles.item} onPress={() => router.push(`/(tabs)/transactions/${item.id}`)}>
+                <Text style={styles.itemTitle}>
+                  {item.type === 'inflow' ? '+' : '-'}{item.amount}
+                </Text>
+                <Text style={styles.itemSubtitle}>{item.category}</Text>
+              </TouchableOpacity>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.placeholder}>No recent transactions.</Text>
         )}
-        ListEmptyComponent={<Text style={styles.placeholder}>No recent transactions.</Text>}
-        contentContainerStyle={{ paddingVertical: 8 }}
-      />
+      </View>
 
       <TouchableOpacity style={styles.fab} onPress={() => setDrawerOpen(true)}>
         <Text style={styles.fabText}>+</Text>
