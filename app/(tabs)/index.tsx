@@ -46,6 +46,7 @@ export default function DashboardScreen() {
   };
 
   return (
+    <View style={{ flex: 1 }}>
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
@@ -127,43 +128,43 @@ export default function DashboardScreen() {
         contentContainerStyle={{ paddingVertical: 8 }}
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => setDrawerOpen(true)}>
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={drawerOpen}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setDrawerOpen(false)}
-     >
-        <Pressable style={styles.backdrop} onPress={() => setDrawerOpen(false)} />
-        <View style={styles.drawer}>
-          <View style={styles.grabber} />
-          <Text style={styles.drawerTitle}>Add transaction via</Text>
-          <View style={styles.drawerActions}>
-            <TouchableOpacity style={styles.drawerAction} onPress={goOCR}>
-              <View style={styles.actionIconWrap}>
-                <MaterialCommunityIcons name="text-recognition" size={24} color="#111" />
-              </View>
-              <Text style={styles.drawerActionText}>OCR</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.drawerAction} onPress={goVoice}>
-              <View style={styles.actionIconWrap}>
-                <Ionicons name="mic-outline" size={24} color="#111" />
-              </View>
-              <Text style={styles.drawerActionText}>Voice</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.drawerAction} onPress={goDirect}>
-              <View style={styles.actionIconWrap}>
-                <Ionicons name="create-outline" size={24} color="#111" />
-              </View>
-              <Text style={styles.drawerActionText}>Direct</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </ParallaxScrollView>
+    <TouchableOpacity style={styles.fab} onPress={() => setDrawerOpen(true)}>
+      <Text style={styles.fabText}>+</Text>
+    </TouchableOpacity>
+    <Modal
+      visible={drawerOpen}
+      animationType="slide"
+      transparent
+      onRequestClose={() => setDrawerOpen(false)}
+    >
+      <Pressable style={styles.backdrop} onPress={() => setDrawerOpen(false)} />
+      <View style={styles.drawer}>
+        <View style={styles.grabber} />
+        <Text style={styles.drawerTitle}>Add transaction via</Text>
+        <View style={styles.drawerActions}>
+          <TouchableOpacity style={styles.drawerAction} onPress={goOCR}>
+            <View style={styles.actionIconWrap}>
+              <MaterialCommunityIcons name="text-recognition" size={24} color="#111" />
+            </View>
+            <Text style={styles.drawerActionText}>OCR</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.drawerAction} onPress={goVoice}>
+            <View style={styles.actionIconWrap}>
+              <Ionicons name="mic-outline" size={24} color="#111" />
+            </View>
+            <Text style={styles.drawerActionText}>Voice</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.drawerAction} onPress={goDirect}>
+            <View style={styles.actionIconWrap}>
+              <Ionicons name="create-outline" size={24} color="#111" />
+            </View>
+            <Text style={styles.drawerActionText}>Direct</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+    </View>
   );
 }
 
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 100,
   },
   fabText: { color: '#fff', fontSize: 24, fontWeight: '800' },
   backdrop: {
