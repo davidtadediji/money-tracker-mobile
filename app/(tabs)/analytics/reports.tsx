@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function Reports() {
   const router = useRouter();
@@ -13,7 +15,7 @@ export default function Reports() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Custom Reports</Text>
       <TextInput style={styles.input} placeholder="From (YYYY-MM-DD)" value={from} onChangeText={setFrom} placeholderTextColor="#777" />
       <TextInput style={styles.input} placeholder="To (YYYY-MM-DD)" value={to} onChangeText={setTo} placeholderTextColor="#777" />
@@ -24,7 +26,7 @@ export default function Reports() {
       <TouchableOpacity style={[styles.secondaryButton]} onPress={() => router.back()}>
         <Text style={styles.secondaryButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

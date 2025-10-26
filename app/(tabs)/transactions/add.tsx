@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AddTransaction() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function AddTransaction() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Add Transaction</Text>
 
       <View style={styles.typeRow}>
@@ -61,7 +62,7 @@ export default function AddTransaction() {
       <TouchableOpacity style={styles.primaryButton} onPress={save}>
         <Text style={styles.primaryButtonText}>Save</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

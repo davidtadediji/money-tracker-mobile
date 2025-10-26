@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Button,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PreferencesScreen() {
   const [currency, setCurrency] = useState("USD");
@@ -18,6 +19,7 @@ export default function PreferencesScreen() {
   const [timeframe, setTimeframe] = useState<
     "daily" | "weekly" | "monthly" | "yearly"
   >("monthly");
+  
 
   const handleSave = () => {
     console.log("Preferences saved", {
@@ -31,7 +33,7 @@ export default function PreferencesScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Preferences</Text>
 
       <View style={styles.group}>
@@ -88,7 +90,7 @@ export default function PreferencesScreen() {
       </View>
 
       <Button title="Save" onPress={handleSave} />
-    </View>
+    </SafeAreaView>
   );
 }
 

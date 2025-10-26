@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateBudget() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function CreateBudget() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Create Budget</Text>
       <TextInput
         style={styles.input}
@@ -49,7 +50,7 @@ export default function CreateBudget() {
       <TouchableOpacity style={styles.primaryButton} onPress={save}>
         <Text style={styles.primaryButtonText}>Save</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
