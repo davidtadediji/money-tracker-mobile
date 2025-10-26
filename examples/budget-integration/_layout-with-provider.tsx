@@ -1,3 +1,11 @@
+/**
+ * Example: Root Layout with BudgetProvider
+ * 
+ * File: app/_layout.tsx
+ * 
+ * Copy the BudgetProvider integration to your actual _layout.tsx
+ */
+
 import { BudgetProvider } from "@/contexts/BudgetContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -19,6 +27,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      {/* ⭐ Wrap with BudgetProvider */}
       <BudgetProvider>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
           <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
@@ -35,3 +44,4 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
