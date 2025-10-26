@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 type Txn = { id: string; amount: number; category: string; type: 'inflow' | 'outflow'; date: string };
 
@@ -27,6 +28,22 @@ export default function DashboardScreen() {
   const recent = TXNS.slice(0, 5);
 
   const bars = [60, 20, 40, 80, 30, 55, 70];
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+
+  const goDirect = () => {
+    setDrawerOpen(false);
+    router.push('/(tabs)/transactions/add');
+  };
+
+  const goOCR = () => {
+    setDrawerOpen(false);
+    router.push({ pathname: '/(tabs)/transactions/add', params: { mode: 'ocr' } as any });
+  };
+
+  const goVoice = () => {
+    setDrawerOpen(false);
+    router.push({ pathname: '/(tabs)/transactions/add', params: { mode: 'voice' } as any });
+  };
 
   return (
     <ParallaxScrollView
@@ -110,9 +127,42 @@ export default function DashboardScreen() {
         contentContainerStyle={{ paddingVertical: 8 }}
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => router.push('/(tabs)/transactions/add')}>
+      <TouchableOpacity style={styles.fab} onPress={() => setDrawerOpen(true)}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      <Modal
+        visible={drawerOpen}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setDrawerOpen(false)}
+     >
+        <Pressable style={styles.backdrop} onPress={() => setDrawerOpen(false)} />
+        <View style={styles.drawer}>
+          <View style={styles.grabber} />
+          <Text style={styles.drawerTitle}>Add transaction via</Text>
+          <View style={styles.drawerActions}>
+            <TouchableOpacity style={styles.drawerAction} onPress={goOCR}>
+              <View style={styles.actionIconWrap}>
+                <MaterialCommunityIcons name="text-recognition" size={24} color="#111" />
+              </View>
+              <Text style={styles.drawerActionText}>OCR</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.drawerAction} onPress={goVoice}>
+              <View style={styles.actionIconWrap}>
+                <Ionicons name="mic-outline" size={24} color="#111" />
+              </View>
+              <Text style={styles.drawerActionText}>Voice</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.drawerAction} onPress={goDirect}>
+              <View style={styles.actionIconWrap}>
+                <Ionicons name="create-outline" size={24} color="#111" />
+              </View>
+              <Text style={styles.drawerActionText}>Direct</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ParallaxScrollView>
   );
 }
@@ -174,4 +224,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   fabText: { color: '#fff', fontSize: 24, fontWeight: '800' },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)'
+  },
+  drawer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 24,
+    paddingTop: 8,
+    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  grabber: {
+    alignSelf: 'center',
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#ddd',
+    marginVertical: 8,
+  },
+  drawerTitle: { fontSize: 14, color: '#666', marginBottom: 10, textAlign: 'center' },
+  drawerActions: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 8 },
+  drawerAction: { alignItems: 'center', gap: 8 },
+  actionIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  drawerActionText: { fontSize: 12, color: '#111', fontWeight: '600', marginTop: 4 },
 });
