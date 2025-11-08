@@ -21,50 +21,55 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Dashboard",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <IconSymbol size={28} name="chart.bar.xaxis" color={color} />
           ),
-        }}
+          unmountOnBlur: true,
+        } as any}
       />
 
       <Tabs.Screen
         name="transactions"
         options={{
           title: "Transactions",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
-        }}
+          unmountOnBlur: true,
+        } as any}
       />
 
       <Tabs.Screen
         name="budget"
         options={{
           title: "Budget",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <IconSymbol size={28} name="wallet.pass.fill" color={color} />
           ),
-        }}
+          unmountOnBlur: true,
+        } as any}
       />
 
       <Tabs.Screen
         name="analytics"
         options={{
           title: "Analytics",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <IconSymbol size={28} name="chart.bar.xaxis" color={color} />
           ),
-        }}
+          unmountOnBlur: true,
+        } as any}
       />
 
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <IconSymbol size={28} name="gear" color={color} />
           ),
-        }}
+          unmountOnBlur: true,
+        } as any}
       />
     </Tabs>
   );
