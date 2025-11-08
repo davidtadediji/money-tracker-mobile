@@ -18,7 +18,12 @@ export default function AddTransaction() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Add Transaction</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>{"<"} Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Add Transaction</Text>
+      </View>
 
       <View style={styles.typeRow}>
         {(['outflow', 'inflow'] as const).map((t) => (
@@ -68,6 +73,9 @@ export default function AddTransaction() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  backButton: { paddingVertical: 6, paddingHorizontal: 8 },
+  backText: { color: '#111', fontSize: 16, fontWeight: '600' },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 12 },
   input: {
     borderWidth: 1,

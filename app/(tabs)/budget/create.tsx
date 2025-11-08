@@ -17,7 +17,12 @@ export default function CreateBudget() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Create Budget</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>{"<"} Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>Create Budget</Text>
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Category"
@@ -56,6 +61,9 @@ export default function CreateBudget() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
+  backButton: { paddingVertical: 6, paddingHorizontal: 8 },
+  backText: { color: '#111', fontSize: 16, fontWeight: '600' },
   title: { fontSize: 22, fontWeight: '700', marginBottom: 12 },
   label: { marginBottom: 8, color: '#555' },
   input: {
