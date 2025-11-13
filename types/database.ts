@@ -94,6 +94,144 @@ export interface Database {
           }
         ]
       }
+      assets: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          type: 'cash' | 'bank' | 'investment' | 'property' | 'other'
+          current_value: number
+          currency: string
+          description: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          type: 'cash' | 'bank' | 'investment' | 'property' | 'other'
+          current_value: number
+          currency?: string
+          description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          type?: 'cash' | 'bank' | 'investment' | 'property' | 'other'
+          current_value?: number
+          currency?: string
+          description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      liabilities: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          type: 'credit_card' | 'loan' | 'mortgage' | 'other'
+          current_balance: number
+          interest_rate: number | null
+          currency: string
+          description: string | null
+          due_date: string | null
+          minimum_payment: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          type: 'credit_card' | 'loan' | 'mortgage' | 'other'
+          current_balance: number
+          interest_rate?: number | null
+          currency?: string
+          description?: string | null
+          due_date?: string | null
+          minimum_payment?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          type?: 'credit_card' | 'loan' | 'mortgage' | 'other'
+          current_balance?: number
+          interest_rate?: number | null
+          currency?: string
+          description?: string | null
+          due_date?: string | null
+          minimum_payment?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "liabilities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      balance_snapshots: {
+        Row: {
+          id: string
+          user_id: string
+          snapshot_date: string
+          total_assets: number
+          total_liabilities: number
+          net_worth: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          snapshot_date: string
+          total_assets: number
+          total_liabilities: number
+          net_worth?: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          snapshot_date?: string
+          total_assets?: number
+          total_liabilities?: number
+          net_worth?: number
+          notes?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "balance_snapshots_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -118,4 +256,16 @@ export type BudgetUpdate = Database['public']['Tables']['budgets']['Update']
 export type Transaction = Database['public']['Tables']['transactions']['Row']
 export type TransactionInsert = Database['public']['Tables']['transactions']['Insert']
 export type TransactionUpdate = Database['public']['Tables']['transactions']['Update']
+
+export type Asset = Database['public']['Tables']['assets']['Row']
+export type AssetInsert = Database['public']['Tables']['assets']['Insert']
+export type AssetUpdate = Database['public']['Tables']['assets']['Update']
+
+export type Liability = Database['public']['Tables']['liabilities']['Row']
+export type LiabilityInsert = Database['public']['Tables']['liabilities']['Insert']
+export type LiabilityUpdate = Database['public']['Tables']['liabilities']['Update']
+
+export type BalanceSnapshot = Database['public']['Tables']['balance_snapshots']['Row']
+export type BalanceSnapshotInsert = Database['public']['Tables']['balance_snapshots']['Insert']
+export type BalanceSnapshotUpdate = Database['public']['Tables']['balance_snapshots']['Update']
 
