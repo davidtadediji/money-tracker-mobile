@@ -1,3 +1,4 @@
+import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -20,17 +21,19 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <BudgetProvider>
-          <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: "modal", title: "Modal" }}
-            />
-          </Stack>
-          <StatusBar style="auto" />
-        </BudgetProvider>
+        <BalanceSheetProvider>
+          <BudgetProvider>
+            <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="modal"
+                options={{ presentation: "modal", title: "Modal" }}
+              />
+            </Stack>
+            <StatusBar style="auto" />
+          </BudgetProvider>
+        </BalanceSheetProvider>
       </ThemeProvider>
     </SafeAreaProvider>
 
