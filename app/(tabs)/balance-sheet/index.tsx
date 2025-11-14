@@ -245,17 +245,25 @@ export default function BalanceSheetIndex() {
             <Text style={styles.title}>Balance Sheet</Text>
             <Text style={styles.subtitle}>Your financial position</Text>
           </View>
-          <TouchableOpacity
-            style={styles.exportButton}
-            onPress={handleExport}
-            disabled={isExporting || (assets.length === 0 && liabilities.length === 0)}
-          >
-            {isExporting ? (
-              <ActivityIndicator size="small" color={Colors.light.primary} />
-            ) : (
-              <Text style={styles.exportButtonText}>Export</Text>
-            )}
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/(tabs)/balance-sheet/settings')}
+            >
+              <Text style={styles.settingsButtonIcon}>⚙️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.exportButton}
+              onPress={handleExport}
+              disabled={isExporting || (assets.length === 0 && liabilities.length === 0)}
+            >
+              {isExporting ? (
+                <ActivityIndicator size="small" color={Colors.light.primary} />
+              ) : (
+                <Text style={styles.exportButtonText}>Export</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Time Period Selector */}
@@ -515,6 +523,23 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     marginTop: Spacing.xs,
     fontSize: Typography.fontSize.base,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  settingsButton: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  settingsButtonIcon: {
+    fontSize: 20,
   },
   exportButton: {
     paddingVertical: Spacing.sm,

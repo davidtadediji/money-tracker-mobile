@@ -6,6 +6,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createAsset as createAssetService,
   createBalanceSnapshot,
@@ -17,7 +18,7 @@ import {
   updateAsset as updateAssetService,
   updateLiability as updateLiabilityService,
 } from '@/services/balanceSheetService';
-import { Asset, AssetInsert, AssetUpdate, Liability, LiabilityInsert, LiabilityUpdate } from '@/types/database';
+import { Asset, AssetInsert, AssetUpdate, Liability, LiabilityInsert, LiabilityUpdate, Transaction } from '@/types/database';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 // ============================================================================
@@ -69,6 +70,12 @@ interface BalanceSheetContextType {
   // Utility
   refresh: () => Promise<void>;
   createSnapshot: () => Promise<{ success: boolean; error?: string }>;
+
+  // Settings
+  autoUpdateEnabled: boolean;
+  primaryAssetId: string | null;
+  setAutoUpdateEnabled: (enabled: boolean) => Promise<void>;
+  setPrimaryAssetId: (assetId: string | null) => Promise<void>;
 }
 
 // ============================================================================
@@ -88,6 +95,10 @@ export function BalanceSheetProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+
+  // Settings State
+  const [autoUpdateEnabled, setAutoUpdateEnabledState] = useState<boolean>(false);
+  const [primaryAssetId, setPrimaryAssetIdState] = useState<string | null>(null);
 
   // ============================================================================
   // Calculated Values (Memoized)
@@ -477,6 +488,157 @@ export function BalanceSheetProvider({ children }: { children: React.ReactNode }
   }, [getUserId, fetchBalanceSheet, createSnapshotInternal]);
 
   // ============================================================================
+  // Settings Management
+  // ============================================================================
+
+  // Load settings from AsyncStorage
+  const loadSettings = useCallback(async () => {
+    try {
+      const [autoUpdateStr, primaryAssetIdStr] = await Promise.all([
+        AsyncStorage.getItem('balanceSheet_autoUpdate'),
+        AsyncStorage.getItem('balanceSheet_primaryAssetId'),
+      ]);
+
+      setAutoUpdateEnabledState(autoUpdateStr === 'true');
+      setPrimaryAssetIdState(primaryAssetIdStr);
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  }, []);
+
+  // Set auto-update enabled
+  const setAutoUpdateEnabled = useCallback(async (enabled: boolean) => {
+    try {
+      await AsyncStorage.setItem('balanceSheet_autoUpdate', enabled.toString());
+      setAutoUpdateEnabledState(enabled);
+    } catch (error) {
+      console.error('Error saving auto-update setting:', error);
+    }
+  }, []);
+
+  // Set primary asset ID
+  const setPrimaryAssetId = useCallback(async (assetId: string | null) => {
+    try {
+      if (assetId) {
+        await AsyncStorage.setItem('balanceSheet_primaryAssetId', assetId);
+      } else {
+        await AsyncStorage.removeItem('balanceSheet_primaryAssetId');
+      }
+      setPrimaryAssetIdState(assetId);
+    } catch (error) {
+      console.error('Error saving primary asset ID:', error);
+    }
+  }, []);
+
+  // ============================================================================
+  // Auto-Update from Transactions
+  // ============================================================================
+
+  const handleTransactionUpdate = useCallback(async (transaction: Transaction) => {
+    if (!autoUpdateEnabled || !userId) return;
+
+    try {
+      // Determine which asset to update
+      let targetAssetId = primaryAssetId;
+
+      // If no primary asset is set, try to find or create a "Cash" asset
+      if (!targetAssetId) {
+        const cashAsset = assets.find(
+          (a) => a.name.toLowerCase() === 'cash' || a.type === 'cash'
+        );
+        
+        if (cashAsset) {
+          targetAssetId = cashAsset.id;
+        } else {
+          // Create default cash asset
+          const result = await createAssetService(
+            {
+              name: 'Cash',
+              type: 'cash',
+              current_value: 0,
+              currency: 'USD',
+            },
+            userId
+          );
+          
+          if (result.data) {
+            targetAssetId = result.data.id;
+            // Refresh to get the new asset
+            await fetchBalanceSheet(userId);
+          }
+        }
+      }
+
+      if (!targetAssetId) return;
+
+      // Find the target asset
+      const targetAsset = assets.find((a) => a.id === targetAssetId);
+      if (!targetAsset) return;
+
+      // Calculate new value based on transaction type
+      let newValue = targetAsset.current_value;
+      
+      if (transaction.type === 'income') {
+        // Add income to asset
+        newValue += transaction.amount;
+      } else if (transaction.type === 'expense') {
+        // Deduct expense from asset
+        newValue -= transaction.amount;
+      }
+
+      // Update the asset
+      await updateAssetService(targetAssetId, {
+        current_value: newValue,
+      });
+
+      // Refresh balance sheet to show updated values
+      await fetchBalanceSheet(userId);
+
+      console.log(`Auto-updated asset ${targetAsset.name}: ${transaction.type} $${transaction.amount}`);
+    } catch (error) {
+      console.error('Error auto-updating balance from transaction:', error);
+    }
+  }, [autoUpdateEnabled, primaryAssetId, userId, assets, fetchBalanceSheet]);
+
+  // ============================================================================
+  // Load Settings on Mount
+  // ============================================================================
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
+  // ============================================================================
+  // Transaction Listener
+  // ============================================================================
+
+  useEffect(() => {
+    if (!userId || !autoUpdateEnabled) return;
+
+    // Subscribe to new transactions
+    const subscription = supabase
+      .channel('balance-sheet-transactions')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'transactions',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          console.log('New transaction detected:', payload);
+          handleTransactionUpdate(payload.new as Transaction);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [userId, autoUpdateEnabled, handleTransactionUpdate]);
+
+  // ============================================================================
   // Context Value
   // ============================================================================
 
@@ -503,6 +665,12 @@ export function BalanceSheetProvider({ children }: { children: React.ReactNode }
     // Utility
     refresh,
     createSnapshot,
+
+    // Settings
+    autoUpdateEnabled,
+    primaryAssetId,
+    setAutoUpdateEnabled,
+    setPrimaryAssetId,
   };
 
   return <BalanceSheetContext.Provider value={value}>{children}</BalanceSheetContext.Provider>;
