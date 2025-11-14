@@ -155,7 +155,7 @@ export default function TransactionsIndex() {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.headerRow}>
-        <View>
+        <View style={styles.headerLeft}>
           <Text style={styles.title}>Transactions</Text>
           {stats && (
             <Text style={styles.subtitle}>
@@ -165,16 +165,22 @@ export default function TransactionsIndex() {
         </View>
         <View style={styles.headerButtons}>
           <TouchableOpacity
+            style={styles.recurringButton}
+            onPress={() => router.push('/(tabs)/transactions/recurring')}
+          >
+            <Text style={styles.recurringButtonText}>🔄</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.smartButton}
             onPress={() => router.push('/(tabs)/transactions/smart-entry')}
           >
-            <Text style={styles.smartButtonText}>✨ Smart</Text>
+            <Text style={styles.smartButtonText}>Smart</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.primaryButton}
             onPress={() => router.push('/(tabs)/transactions/add')}
           >
-            <Text style={styles.primaryButtonText}>+ Add</Text>
+            <Text style={styles.primaryButtonText}>Add</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -313,56 +319,84 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.md,
     paddingBottom: Spacing.sm,
   },
+  headerLeft: {
+    flex: 1,
+    marginRight: Spacing.sm,
+  },
   title: {
-    fontSize: Typography.fontSize.xxxl,
+    fontSize: Typography.fontSize.xxl,
     fontWeight: Typography.fontWeight.bold,
     color: Colors.light.text,
   },
   subtitle: {
     color: Colors.light.textSecondary,
     marginTop: Spacing.xs,
-    fontSize: Typography.fontSize.sm,
+    fontSize: Typography.fontSize.xs,
   },
   primaryButton: {
     backgroundColor: Colors.light.primary,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: BorderRadius.xl,
     shadowColor: Colors.light.primary,
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: {
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
-    fontSize: Typography.fontSize.sm,
+    fontSize: 12,
   },
   headerButtons: {
     flexDirection: 'row',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 0,
+  },
+  recurringButton: {
+    backgroundColor: Colors.light.surface,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: Colors.light.border,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recurringButtonText: {
+    fontSize: 18,
   },
   smartButton: {
     backgroundColor: Colors.light.accent,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     borderRadius: BorderRadius.xl,
     shadowColor: Colors.light.accent,
     shadowOpacity: 0.3,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   smartButtonText: {
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
-    fontSize: Typography.fontSize.sm,
+    fontSize: 12,
   },
 
   // Stats

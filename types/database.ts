@@ -359,6 +359,71 @@ export interface Database {
           }
         ]
       }
+      recurring_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          type: 'income' | 'expense'
+          category: string
+          amount: number
+          description: string | null
+          frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly'
+          start_date: string
+          end_date: string | null
+          next_occurrence_date: string
+          is_active: boolean
+          last_processed_date: string | null
+          notification_enabled: boolean
+          notification_days_before: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: 'income' | 'expense'
+          category: string
+          amount: number
+          description?: string | null
+          frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly'
+          start_date?: string
+          end_date?: string | null
+          next_occurrence_date: string
+          is_active?: boolean
+          last_processed_date?: string | null
+          notification_enabled?: boolean
+          notification_days_before?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: 'income' | 'expense'
+          category?: string
+          amount?: number
+          description?: string | null
+          frequency?: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly'
+          start_date?: string
+          end_date?: string | null
+          next_occurrence_date?: string
+          is_active?: boolean
+          last_processed_date?: string | null
+          notification_enabled?: boolean
+          notification_days_before?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -403,4 +468,8 @@ export type ReportUpdate = Database['public']['Tables']['reports']['Update']
 export type SmartEntry = Database['public']['Tables']['smart_entries']['Row']
 export type SmartEntryInsert = Database['public']['Tables']['smart_entries']['Insert']
 export type SmartEntryUpdate = Database['public']['Tables']['smart_entries']['Update']
+
+export type RecurringTransaction = Database['public']['Tables']['recurring_transactions']['Row']
+export type RecurringTransactionInsert = Database['public']['Tables']['recurring_transactions']['Insert']
+export type RecurringTransactionUpdate = Database['public']['Tables']['recurring_transactions']['Update']
 

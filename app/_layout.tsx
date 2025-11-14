@@ -1,6 +1,7 @@
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
 import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
+import { RecurringTransactionProvider } from "@/contexts/RecurringTransactionContext";
 import { SmartEntryProvider } from "@/contexts/SmartEntryContext";
 import { TransactionProvider } from "@/contexts/TransactionContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -27,19 +28,21 @@ export default function RootLayout() {
         <BalanceSheetProvider>
           <BudgetProvider>
             <TransactionProvider>
-              <AnalyticsProvider>
-                <SmartEntryProvider>
-                  <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-                    <Stack.Screen name="index" options={{ headerShown: false }} />
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                    <Stack.Screen
-                      name="modal"
-                      options={{ presentation: "modal", title: "Modal" }}
-                    />
-                  </Stack>
-                  <StatusBar style="auto" />
-                </SmartEntryProvider>
-              </AnalyticsProvider>
+              <RecurringTransactionProvider>
+                <AnalyticsProvider>
+                  <SmartEntryProvider>
+                    <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                      <Stack.Screen name="index" options={{ headerShown: false }} />
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                      <Stack.Screen
+                        name="modal"
+                        options={{ presentation: "modal", title: "Modal" }}
+                      />
+                    </Stack>
+                    <StatusBar style="auto" />
+                  </SmartEntryProvider>
+                </AnalyticsProvider>
+              </RecurringTransactionProvider>
             </TransactionProvider>
           </BudgetProvider>
         </BalanceSheetProvider>
