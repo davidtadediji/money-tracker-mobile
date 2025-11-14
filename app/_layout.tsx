@@ -1,5 +1,6 @@
 import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
+import { TransactionProvider } from "@/contexts/TransactionContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   DarkTheme,
@@ -23,15 +24,17 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <BalanceSheetProvider>
           <BudgetProvider>
-            <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="modal"
-                options={{ presentation: "modal", title: "Modal" }}
-              />
-            </Stack>
-            <StatusBar style="auto" />
+            <TransactionProvider>
+              <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal", title: "Modal" }}
+                />
+              </Stack>
+              <StatusBar style="auto" />
+            </TransactionProvider>
           </BudgetProvider>
         </BalanceSheetProvider>
       </ThemeProvider>

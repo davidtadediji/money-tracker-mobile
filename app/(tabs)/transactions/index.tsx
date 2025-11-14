@@ -1,24 +1,168 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTransactions } from '@/contexts/TransactionContext';
 import { Colors } from '@/constants/theme';
 import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
+import { Transaction } from '@/types/database';
 
-type Txn = { id: string; amount: number; category: string; type: 'inflow' | 'outflow' };
-
-const SAMPLE: Txn[] = [
-  { id: '1', amount: 1200, category: 'Salary', type: 'inflow' },
-  { id: '2', amount: 35, category: 'Food', type: 'outflow' },
-];
+type FilterType = 'all' | 'income' | 'expense';
+type SortOption = 'date' | 'amount';
 
 export default function TransactionsIndex() {
   const router = useRouter();
+  const { transactions, loading, error, refreshTransactions, deleteTransaction, stats } = useTransactions();
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [sortBy, setSortBy] = useState<SortOption>('date');
+
+  // Filtered and sorted transactions
+  const filteredTransactions = useMemo(() => {
+    let filtered = [...transactions];
+
+    // Apply filter
+    if (filterType !== 'all') {
+      filtered = filtered.filter((txn) => txn.type === filterType);
+    }
+
+    // Apply sort
+    filtered.sort((a, b) => {
+      if (sortBy === 'date') {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      } else {
+        return b.amount - a.amount;
+      }
+    });
+
+    return filtered;
+  }, [transactions, filterType, sortBy]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshTransactions();
+    setRefreshing(false);
+  };
+
+  const handleDelete = (transaction: Transaction) => {
+    Alert.alert(
+      'Delete Transaction',
+      `Are you sure you want to delete this ${transaction.category} transaction?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const { success, error } = await deleteTransaction(transaction.id);
+            if (!success) {
+              Alert.alert('Error', error || 'Failed to delete transaction');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatCurrency = (amount: number): string => {
+    return `$${amount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const renderTransaction = ({ item }: { item: Transaction }) => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => router.push(`/(tabs)/transactions/${item.id}`)}
+      onLongPress={() => handleDelete(item)}
+    >
+      <View style={styles.itemLeft}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: item.type === 'income' ? Colors.light.successBackground : Colors.light.errorBackground },
+          ]}
+        >
+          <Text style={styles.iconText}>{item.type === 'income' ? '↑' : '↓'}</Text>
+        </View>
+        <View style={styles.itemTextContainer}>
+          <Text style={styles.itemCategory}>{item.category}</Text>
+          <Text style={styles.itemDate}>{formatDate(item.date)}</Text>
+          {item.description && <Text style={styles.itemDescription} numberOfLines={1}>{item.description}</Text>}
+        </View>
+      </View>
+      <View style={styles.itemRight}>
+        <Text
+          style={[
+            styles.itemAmount,
+            { color: item.type === 'income' ? Colors.light.success : Colors.light.error },
+          ]}
+        >
+          {item.type === 'income' ? '+' : '-'}
+          {formatCurrency(item.amount)}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  if (loading && transactions.length === 0) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.light.primary} />
+          <Text style={styles.loadingText}>Loading transactions...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={styles.errorTitle}>Oops!</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      {/* Header */}
       <View style={styles.headerRow}>
-        <Text style={styles.title}>Transactions</Text>
+        <View>
+          <Text style={styles.title}>Transactions</Text>
+          {stats && (
+            <Text style={styles.subtitle}>
+              {transactions.length} transaction{transactions.length !== 1 ? 's' : ''}
+            </Text>
+          )}
+        </View>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() => router.push('/(tabs)/transactions/add')}
@@ -27,44 +171,154 @@ export default function TransactionsIndex() {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={SAMPLE}
-        keyExtractor={(item) => item.id}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => router.push(`/(tabs)/transactions/${item.id}`)}
-          >
-            <Text style={styles.itemTitle}>
-              {item.type === 'inflow' ? '+' : '-'}{item.amount}
+      {/* Stats Cards */}
+      {stats && (
+        <View style={styles.statsContainer}>
+          <View style={[styles.statCard, { backgroundColor: Colors.light.successBackground }]}>
+            <Text style={styles.statLabel}>Income</Text>
+            <Text style={[styles.statValue, { color: Colors.light.success }]}>
+              {formatCurrency(stats.totalIncome)}
             </Text>
-            <Text style={styles.itemSubtitle}>{item.category}</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={styles.placeholder}>No transactions yet.</Text>}
-        contentContainerStyle={{ paddingVertical: 8 }}
+          </View>
+          <View style={[styles.statCard, { backgroundColor: Colors.light.errorBackground }]}>
+            <Text style={styles.statLabel}>Expense</Text>
+            <Text style={[styles.statValue, { color: Colors.light.error }]}>
+              {formatCurrency(stats.totalExpense)}
+            </Text>
+          </View>
+          <View style={[styles.statCard, { backgroundColor: Colors.light.secondaryLight }]}>
+            <Text style={styles.statLabel}>Net</Text>
+            <Text
+              style={[
+                styles.statValue,
+                { color: stats.netAmount >= 0 ? Colors.light.success : Colors.light.error },
+              ]}
+            >
+              {formatCurrency(stats.netAmount)}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      {/* Filters */}
+      <View style={styles.filtersContainer}>
+        <View style={styles.filterChips}>
+          {(['all', 'income', 'expense'] as FilterType[]).map((filter) => (
+            <TouchableOpacity
+              key={filter}
+              style={[styles.filterChip, filterType === filter && styles.filterChipActive]}
+              onPress={() => setFilterType(filter)}
+            >
+              <Text
+                style={[styles.filterChipText, filterType === filter && styles.filterChipTextActive]}
+              >
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <TouchableOpacity
+          style={styles.sortButton}
+          onPress={() => setSortBy(sortBy === 'date' ? 'amount' : 'date')}
+        >
+          <Text style={styles.sortButtonText}>
+            {sortBy === 'date' ? '📅' : '💰'} Sort
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Transactions List */}
+      <FlatList
+        data={filteredTransactions}
+        keyExtractor={(item) => item.id}
+        renderItem={renderTransaction}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={Colors.light.primary}
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>💸</Text>
+            <Text style={styles.emptyTitle}>No transactions yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Tap the "Add" button to create your first transaction
+            </Text>
+          </View>
+        }
       />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: Spacing.md,
+  container: {
+    flex: 1,
     backgroundColor: Colors.light.backgroundSecondary,
   },
-  headerRow: { 
-    flexDirection: 'row', 
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: Spacing.md,
+    color: Colors.light.textSecondary,
+    fontSize: Typography.fontSize.base,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xl,
+  },
+  errorIcon: {
+    fontSize: 64,
     marginBottom: Spacing.lg,
   },
-  title: { 
+  errorTitle: {
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.light.text,
+    marginBottom: Spacing.sm,
+  },
+  errorMessage: {
+    color: Colors.light.error,
+    fontSize: Typography.fontSize.base,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  retryButton: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+  },
+  retryButtonText: {
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.base,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    padding: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  title: {
     fontSize: Typography.fontSize.xxxl,
     fontWeight: Typography.fontWeight.bold,
-    flex: 1,
     color: Colors.light.text,
+  },
+  subtitle: {
+    color: Colors.light.textSecondary,
+    marginTop: Spacing.xs,
+    fontSize: Typography.fontSize.sm,
   },
   primaryButton: {
     backgroundColor: Colors.light.primary,
@@ -77,14 +331,95 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  primaryButtonText: { 
+  primaryButtonText: {
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
     fontSize: Typography.fontSize.sm,
   },
-  item: { 
+
+  // Stats
+  statsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  statCard: {
+    flex: 1,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    alignItems: 'center',
+  },
+  statLabel: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.light.textSecondary,
+    marginBottom: Spacing.xs,
+    fontWeight: Typography.fontWeight.medium,
+  },
+  statValue: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+  },
+
+  // Filters
+  filtersContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+    alignItems: 'center',
+  },
+  filterChips: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    flex: 1,
+  },
+  filterChip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surface,
+  },
+  filterChipActive: {
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
+  },
+  filterChipText: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.light.textSecondary,
+  },
+  filterChipTextActive: {
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  sortButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surface,
+  },
+  sortButtonText: {
+    fontSize: Typography.fontSize.sm,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.light.text,
+  },
+
+  // List
+  listContent: {
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.xxl,
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     backgroundColor: Colors.light.surface,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.sm,
@@ -94,25 +429,70 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  itemTitle: { 
-    fontSize: Typography.fontSize.lg,
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: Spacing.sm,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.sm,
+  },
+  iconText: {
+    fontSize: 20,
+    fontWeight: Typography.fontWeight.bold,
+  },
+  itemTextContainer: {
+    flex: 1,
+  },
+  itemCategory: {
+    fontSize: Typography.fontSize.base,
     fontWeight: Typography.fontWeight.semibold,
     color: Colors.light.text,
   },
-  itemSubtitle: { 
+  itemDate: {
+    fontSize: Typography.fontSize.xs,
     color: Colors.light.textSecondary,
     marginTop: 2,
-    fontSize: Typography.fontSize.sm,
   },
-  separator: { 
-    height: 1, 
-    backgroundColor: 'transparent',
-  },
-  placeholder: { 
+  itemDescription: {
+    fontSize: Typography.fontSize.xs,
     color: Colors.light.textSecondary,
-    marginTop: Spacing.lg,
-    textAlign: 'center',
+    marginTop: 2,
+  },
+  itemRight: {
+    alignItems: 'flex-end',
+  },
+  itemAmount: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+  },
+
+  // Empty
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xxl,
+    paddingTop: Spacing.xxl * 2,
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: Spacing.lg,
+  },
+  emptyTitle: {
+    fontSize: Typography.fontSize.xl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+    marginBottom: Spacing.sm,
+  },
+  emptySubtitle: {
     fontSize: Typography.fontSize.base,
+    color: Colors.light.textSecondary,
+    textAlign: 'center',
+    maxWidth: 280,
   },
 });
-

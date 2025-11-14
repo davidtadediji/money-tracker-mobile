@@ -11,7 +11,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTransaction } from '@/contexts/TransactionContext';
 import { Colors } from '@/constants/theme';
@@ -44,20 +44,21 @@ interface ValidationErrors {
   date?: string;
 }
 
-export default function AddTransaction() {
+export default function EditTransaction() {
   const router = useRouter();
-  const { createTransaction, categories: userCategories } = useTransaction();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { transactions, updateTransaction, categories: userCategories } = useTransaction();
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState(getTodayDate());
+  const [date, setDate] = useState('');
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
-  // Combined categories (user's previous + predefined)
   const [allCategories, setAllCategories] = useState<string[]>([]);
 
   useEffect(() => {
@@ -67,10 +68,19 @@ export default function AddTransaction() {
     setAllCategories(combined);
   }, [userCategories]);
 
-  function getTodayDate(): string {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  }
+  useEffect(() => {
+    if (id) {
+      const found = transactions.find((t) => t.id === id);
+      if (found) {
+        setAmount(found.amount.toString());
+        setCategory(found.category);
+        setDescription(found.description || '');
+        setDate(found.date);
+        setType(found.type);
+      }
+      setIsFetching(false);
+    }
+  }, [id, transactions]);
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {};
@@ -108,15 +118,15 @@ export default function AddTransaction() {
     );
   };
 
-  const handleSave = async () => {
-    if (!validateForm()) {
+  const handleUpdate = async () => {
+    if (!validateForm() || !id) {
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const { success, error } = await createTransaction({
+      const { success, error } = await updateTransaction(id, {
         amount: parseFloat(amount),
         category: category.trim(),
         description: description.trim() || null,
@@ -125,14 +135,14 @@ export default function AddTransaction() {
       });
 
       if (success) {
-        Alert.alert('Success', 'Transaction added successfully', [
+        Alert.alert('Success', 'Transaction updated successfully', [
           {
             text: 'OK',
             onPress: () => router.back(),
           },
         ]);
       } else {
-        Alert.alert('Error', error || 'Failed to add transaction');
+        Alert.alert('Error', error || 'Failed to update transaction');
       }
     } catch (err) {
       Alert.alert('Error', 'An unexpected error occurred');
@@ -161,6 +171,15 @@ export default function AddTransaction() {
     }
   };
 
+  if (isFetching) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.light.primary} />
+        <Text style={styles.loadingText}>Loading transaction...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -172,8 +191,8 @@ export default function AddTransaction() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Add Transaction</Text>
-          <Text style={styles.subtitle}>Track your income and expenses</Text>
+          <Text style={styles.title}>Edit Transaction</Text>
+          <Text style={styles.subtitle}>Update your transaction details</Text>
         </View>
 
         {/* Type Selector */}
@@ -269,16 +288,16 @@ export default function AddTransaction() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[
-              styles.saveButton,
-              (!isFormValid() || isLoading) && styles.saveButtonDisabled,
+              styles.updateButton,
+              (!isFormValid() || isLoading) && styles.updateButtonDisabled,
             ]}
-            onPress={handleSave}
+            onPress={handleUpdate}
             disabled={!isFormValid() || isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color={Colors.light.onPrimary} />
             ) : (
-              <Text style={styles.saveButtonText}>Save Transaction</Text>
+              <Text style={styles.updateButtonText}>Update Transaction</Text>
             )}
           </TouchableOpacity>
 
@@ -356,6 +375,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: Spacing.md,
     paddingBottom: Spacing.xxl,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.light.backgroundSecondary,
+  },
+  loadingText: {
+    marginTop: Spacing.md,
+    color: Colors.light.textSecondary,
+    fontSize: Typography.fontSize.base,
   },
 
   // Header
@@ -489,7 +519,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     gap: Spacing.sm,
   },
-  saveButton: {
+  updateButton: {
     backgroundColor: Colors.light.primary,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
@@ -501,10 +531,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
-  saveButtonDisabled: {
+  updateButtonDisabled: {
     opacity: 0.6,
   },
-  saveButtonText: {
+  updateButtonText: {
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
     fontSize: Typography.fontSize.base,
@@ -605,3 +635,4 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundSecondary,
   },
 });
+
