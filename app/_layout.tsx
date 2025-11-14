@@ -1,5 +1,7 @@
+import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
 import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
+import { SmartEntryProvider } from "@/contexts/SmartEntryContext";
 import { TransactionProvider } from "@/contexts/TransactionContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -25,15 +27,19 @@ export default function RootLayout() {
         <BalanceSheetProvider>
           <BudgetProvider>
             <TransactionProvider>
-              <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="modal"
-                  options={{ presentation: "modal", title: "Modal" }}
-                />
-              </Stack>
-              <StatusBar style="auto" />
+              <AnalyticsProvider>
+                <SmartEntryProvider>
+                  <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                    <Stack.Screen name="index" options={{ headerShown: false }} />
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen
+                      name="modal"
+                      options={{ presentation: "modal", title: "Modal" }}
+                    />
+                  </Stack>
+                  <StatusBar style="auto" />
+                </SmartEntryProvider>
+              </AnalyticsProvider>
             </TransactionProvider>
           </BudgetProvider>
         </BalanceSheetProvider>

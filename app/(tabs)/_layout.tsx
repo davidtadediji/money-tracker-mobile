@@ -62,6 +62,17 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
+        name="balance-sheet"
+        options={{
+          title: "Balance",
+          tabBarIcon: ({ color }: { color: string }) => (
+            <IconSymbol size={28} name="chart.pie.fill" color={color} />
+          ),
+          unmountOnBlur: true,
+        } as any}
+      />
+
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",

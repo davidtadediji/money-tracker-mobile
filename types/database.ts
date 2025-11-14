@@ -232,6 +232,133 @@ export interface Database {
           }
         ]
       }
+      reports: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          report_type: 'income_expense' | 'category' | 'trend' | 'budget' | 'custom'
+          date_range: {
+            start: string
+            end: string
+          }
+          filters: {
+            categories?: string[]
+            types?: ('income' | 'expense')[]
+            minAmount?: number
+            maxAmount?: number
+          } | null
+          grouping: 'day' | 'week' | 'month' | 'year' | 'category' | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          report_type: 'income_expense' | 'category' | 'trend' | 'budget' | 'custom'
+          date_range: {
+            start: string
+            end: string
+          }
+          filters?: {
+            categories?: string[]
+            types?: ('income' | 'expense')[]
+            minAmount?: number
+            maxAmount?: number
+          } | null
+          grouping?: 'day' | 'week' | 'month' | 'year' | 'category' | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          report_type?: 'income_expense' | 'category' | 'trend' | 'budget' | 'custom'
+          date_range?: {
+            start: string
+            end: string
+          }
+          filters?: {
+            categories?: string[]
+            types?: ('income' | 'expense')[]
+            minAmount?: number
+            maxAmount?: number
+          } | null
+          grouping?: 'day' | 'week' | 'month' | 'year' | 'category' | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      smart_entries: {
+        Row: {
+          id: string
+          user_id: string
+          entry_type: 'receipt_scan' | 'voice_entry' | 'bulk_import' | 'screenshot'
+          status: 'processing' | 'completed' | 'failed' | 'pending_review'
+          original_data: any | null
+          processed_data: any | null
+          extracted_transactions: any | null
+          error_message: string | null
+          confidence_score: number | null
+          processing_time_ms: number | null
+          created_at: string
+          updated_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          entry_type: 'receipt_scan' | 'voice_entry' | 'bulk_import' | 'screenshot'
+          status?: 'processing' | 'completed' | 'failed' | 'pending_review'
+          original_data?: any | null
+          processed_data?: any | null
+          extracted_transactions?: any | null
+          error_message?: string | null
+          confidence_score?: number | null
+          processing_time_ms?: number | null
+          created_at?: string
+          updated_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          entry_type?: 'receipt_scan' | 'voice_entry' | 'bulk_import' | 'screenshot'
+          status?: 'processing' | 'completed' | 'failed' | 'pending_review'
+          original_data?: any | null
+          processed_data?: any | null
+          extracted_transactions?: any | null
+          error_message?: string | null
+          confidence_score?: number | null
+          processing_time_ms?: number | null
+          created_at?: string
+          updated_at?: string
+          processed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_entries_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -268,4 +395,12 @@ export type LiabilityUpdate = Database['public']['Tables']['liabilities']['Updat
 export type BalanceSnapshot = Database['public']['Tables']['balance_snapshots']['Row']
 export type BalanceSnapshotInsert = Database['public']['Tables']['balance_snapshots']['Insert']
 export type BalanceSnapshotUpdate = Database['public']['Tables']['balance_snapshots']['Update']
+
+export type Report = Database['public']['Tables']['reports']['Row']
+export type ReportInsert = Database['public']['Tables']['reports']['Insert']
+export type ReportUpdate = Database['public']['Tables']['reports']['Update']
+
+export type SmartEntry = Database['public']['Tables']['smart_entries']['Row']
+export type SmartEntryInsert = Database['public']['Tables']['smart_entries']['Insert']
+export type SmartEntryUpdate = Database['public']['Tables']['smart_entries']['Update']
 
