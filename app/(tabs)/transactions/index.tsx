@@ -163,12 +163,20 @@ export default function TransactionsIndex() {
             </Text>
           )}
         </View>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => router.push('/(tabs)/transactions/add')}
-        >
-          <Text style={styles.primaryButtonText}>Add</Text>
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.smartButton}
+            onPress={() => router.push('/(tabs)/transactions/smart-entry')}
+          >
+            <Text style={styles.smartButtonText}>✨ Smart</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={() => router.push('/(tabs)/transactions/add')}
+          >
+            <Text style={styles.primaryButtonText}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Stats Cards */}
@@ -332,6 +340,26 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   primaryButtonText: {
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.sm,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  smartButton: {
+    backgroundColor: Colors.light.accent,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    shadowColor: Colors.light.accent,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  smartButtonText: {
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
     fontSize: Typography.fontSize.sm,
