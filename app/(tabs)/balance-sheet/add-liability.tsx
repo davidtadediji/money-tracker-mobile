@@ -50,16 +50,15 @@ export default function AddLiability() {
       newErrors.name = 'Liability name is required';
     }
 
-    // Validate balance
+    // Validate balance (negative values allowed)
     if (!balance.trim()) {
       newErrors.balance = 'Balance is required';
     } else {
       const numBalance = parseFloat(balance);
       if (isNaN(numBalance)) {
         newErrors.balance = 'Please enter a valid number';
-      } else if (numBalance <= 0) {
-        newErrors.balance = 'Balance must be greater than 0';
       }
+      // Allow negative values for liabilities
     }
 
     setErrors(newErrors);
@@ -70,7 +69,6 @@ export default function AddLiability() {
     return (
       name.trim() !== '' &&
       balance.trim() !== '' &&
-      parseFloat(balance) > 0 &&
       !isNaN(parseFloat(balance))
     );
   };
@@ -114,9 +112,16 @@ export default function AddLiability() {
   };
 
   const handleBalanceChange = (text: string) => {
-    const cleaned = text.replace(/[^0-9.]/g, '');
+    // Allow negative sign, numbers, and decimal point
+    const cleaned = text.replace(/[^0-9.-]/g, '');
+    // Prevent multiple decimal points or negative signs
     const parts = cleaned.split('.');
     if (parts.length > 2) {
+      return;
+    }
+    // Ensure negative sign is only at the start
+    const negativeSigns = cleaned.split('-').length - 1;
+    if (negativeSigns > 1 || (cleaned.indexOf('-') > 0 && cleaned.indexOf('-') !== -1)) {
       return;
     }
     setBalance(cleaned);

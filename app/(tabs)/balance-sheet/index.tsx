@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   RefreshControl,
   ScrollView,
+  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { LineChart } from 'react-native-chart-kit';
 import { useBalanceSheet } from '@/contexts/BalanceSheetContext';
+import { supabase } from '@/lib/supabase';
 import { Colors } from '@/constants/theme';
 import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
+import { BalanceSnapshot } from '@/types/database';
 
 type TimePeriod = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
@@ -45,10 +49,63 @@ export default function BalanceSheetIndex() {
 
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('monthly');
   const [refreshing, setRefreshing] = useState(false);
+  const [snapshots, setSnapshots] = useState<BalanceSnapshot[]>([]);
+  const [loadingSnapshots, setLoadingSnapshots] = useState(false);
+
+  // Fetch snapshots when period changes
+  useEffect(() => {
+    fetchSnapshots();
+  }, [timePeriod]);
+
+  const fetchSnapshots = async () => {
+    setLoadingSnapshots(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Calculate date range based on period
+      const endDate = new Date();
+      const startDate = new Date();
+
+      switch (timePeriod) {
+        case 'daily':
+          startDate.setDate(endDate.getDate() - 7); // Last 7 days
+          break;
+        case 'weekly':
+          startDate.setDate(endDate.getDate() - 28); // Last 4 weeks
+          break;
+        case 'monthly':
+          startDate.setMonth(endDate.getMonth() - 6); // Last 6 months
+          break;
+        case 'yearly':
+          startDate.setFullYear(endDate.getFullYear() - 3); // Last 3 years
+          break;
+      }
+
+      const { data, error } = await supabase
+        .from('balance_snapshots')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('snapshot_date', startDate.toISOString().split('T')[0])
+        .lte('snapshot_date', endDate.toISOString().split('T')[0])
+        .order('snapshot_date', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching snapshots:', error);
+      } else {
+        setSnapshots(data || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoadingSnapshots(false);
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await refresh();
+    await fetchSnapshots();
     setRefreshing(false);
   };
 
@@ -59,12 +116,86 @@ export default function BalanceSheetIndex() {
     })}`;
   };
 
+  const formatCurrencyShort = (amount: number): string => {
+    const absAmount = Math.abs(amount);
+    if (absAmount >= 1000000) {
+      return `$${(absAmount / 1000000).toFixed(1)}M`;
+    } else if (absAmount >= 1000) {
+      return `$${(absAmount / 1000).toFixed(1)}K`;
+    }
+    return `$${absAmount.toFixed(0)}`;
+  };
+
   const getNetWorthColor = (): string => {
     return netWorth >= 0 ? Colors.light.success : Colors.light.error;
   };
 
-  // Calculate percentage change (placeholder - would need historical data)
-  const percentageChange = 5.2; // Mock data
+  // Calculate percentage change from snapshots
+  const percentageChange = useMemo(() => {
+    if (snapshots.length < 2) return 0;
+
+    const currentValue = snapshots[snapshots.length - 1].net_worth;
+    const previousValue = snapshots[0].net_worth;
+
+    if (previousValue === 0) return 0;
+
+    return ((currentValue - previousValue) / Math.abs(previousValue)) * 100;
+  }, [snapshots]);
+
+  const getPeriodLabel = (): string => {
+    switch (timePeriod) {
+      case 'daily':
+        return 'last week';
+      case 'weekly':
+        return 'last month';
+      case 'monthly':
+        return 'last 6 months';
+      case 'yearly':
+        return 'last 3 years';
+    }
+  };
+
+  // Prepare chart data
+  const chartData = useMemo(() => {
+    if (snapshots.length === 0) {
+      // Default empty data
+      return {
+        labels: ['', '', '', '', ''],
+        datasets: [
+          {
+            data: [0, 0, 0, 0, 0],
+            strokeWidth: 2,
+          },
+        ],
+      };
+    }
+
+    // Limit to max 10 data points for readability
+    const step = Math.max(1, Math.floor(snapshots.length / 10));
+    const filteredSnapshots = snapshots.filter((_, index) => index % step === 0);
+
+    return {
+      labels: filteredSnapshots.map((s) => {
+        const date = new Date(s.snapshot_date);
+        if (timePeriod === 'daily') {
+          return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else if (timePeriod === 'weekly' || timePeriod === 'monthly') {
+          return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        } else {
+          return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+        }
+      }),
+      datasets: [
+        {
+          data: filteredSnapshots.map((s) => s.net_worth),
+          strokeWidth: 3,
+          color: (opacity = 1) => Colors.light.primary,
+        },
+      ],
+    };
+  }, [snapshots, timePeriod]);
+
+  const screenWidth = Dimensions.get('window').width;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -120,17 +251,76 @@ export default function BalanceSheetIndex() {
             {netWorth >= 0 ? '' : '-'}
             {formatCurrency(netWorth)}
           </Text>
-          <View style={styles.changeContainer}>
-            <Text
-              style={[
-                styles.changeText,
-                { color: percentageChange >= 0 ? Colors.light.success : Colors.light.error },
-              ]}
-            >
-              {percentageChange >= 0 ? '↗' : '↘'} {Math.abs(percentageChange)}%
-            </Text>
-            <Text style={styles.changeLabel}>vs last {timePeriod}</Text>
-          </View>
+          {snapshots.length >= 2 && (
+            <View style={styles.changeContainer}>
+              <Text
+                style={[
+                  styles.changeText,
+                  { color: percentageChange >= 0 ? Colors.light.success : Colors.light.error },
+                ]}
+              >
+                {percentageChange >= 0 ? '↗' : '↘'} {Math.abs(percentageChange).toFixed(1)}%
+              </Text>
+              <Text style={styles.changeLabel}>from {getPeriodLabel()}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Net Worth Trend Chart */}
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Net Worth Trend</Text>
+          {loadingSnapshots ? (
+            <View style={styles.chartLoading}>
+              <ActivityIndicator size="large" color={Colors.light.primary} />
+              <Text style={styles.chartLoadingText}>Loading trend data...</Text>
+            </View>
+          ) : snapshots.length === 0 ? (
+            <View style={styles.chartEmpty}>
+              <Text style={styles.chartEmptyIcon}>📊</Text>
+              <Text style={styles.chartEmptyText}>No trend data available yet</Text>
+              <Text style={styles.chartEmptySubtext}>
+                Come back after a few days to see your net worth trend
+              </Text>
+            </View>
+          ) : (
+            <LineChart
+              data={chartData}
+              width={screenWidth - Spacing.md * 4}
+              height={220}
+              chartConfig={{
+                backgroundColor: Colors.light.surface,
+                backgroundGradientFrom: Colors.light.surface,
+                backgroundGradientTo: Colors.light.surface,
+                decimalPlaces: 0,
+                color: (opacity = 1) => Colors.light.primary,
+                labelColor: (opacity = 1) => Colors.light.textSecondary,
+                style: {
+                  borderRadius: BorderRadius.xl,
+                },
+                propsForDots: {
+                  r: '4',
+                  strokeWidth: '2',
+                  stroke: Colors.light.primary,
+                  fill: Colors.light.surface,
+                },
+                propsForBackgroundLines: {
+                  strokeDasharray: '',
+                  stroke: Colors.light.border,
+                  strokeWidth: 1,
+                },
+              }}
+              bezier
+              style={styles.chart}
+              formatYLabel={(value) => formatCurrencyShort(parseFloat(value))}
+              withInnerLines={true}
+              withOuterLines={true}
+              withVerticalLines={false}
+              withHorizontalLines={true}
+              withVerticalLabels={true}
+              withHorizontalLabels={true}
+              fromZero={false}
+            />
+          )}
         </View>
 
         {/* Assets Section */}
@@ -350,6 +540,59 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
   },
 
+  // Chart
+  chartContainer: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.lg,
+    padding: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.xxl,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  chartTitle: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+    marginBottom: Spacing.md,
+  },
+  chart: {
+    borderRadius: BorderRadius.xl,
+    marginVertical: Spacing.xs,
+  },
+  chartLoading: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xxl,
+  },
+  chartLoadingText: {
+    marginTop: Spacing.md,
+    fontSize: Typography.fontSize.sm,
+    color: Colors.light.textSecondary,
+  },
+  chartEmpty: {
+    alignItems: 'center',
+    paddingVertical: Spacing.xl,
+  },
+  chartEmptyIcon: {
+    fontSize: 48,
+    marginBottom: Spacing.md,
+  },
+  chartEmptyText: {
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.light.text,
+    marginBottom: Spacing.xs,
+  },
+  chartEmptySubtext: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.light.textSecondary,
+    textAlign: 'center',
+    maxWidth: 280,
+  },
+
   // Section
   section: {
     marginBottom: Spacing.xl,
@@ -501,4 +744,3 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
 });
-
