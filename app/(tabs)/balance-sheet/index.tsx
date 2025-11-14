@@ -8,12 +8,14 @@ import {
   ScrollView,
   Dimensions,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { LineChart } from 'react-native-chart-kit';
 import { useBalanceSheet } from '@/contexts/BalanceSheetContext';
 import { supabase } from '@/lib/supabase';
+import { exportToCSV } from '@/utils/exportBalanceSheet';
 import { Colors } from '@/constants/theme';
 import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 import { BalanceSnapshot } from '@/types/database';
@@ -51,6 +53,7 @@ export default function BalanceSheetIndex() {
   const [refreshing, setRefreshing] = useState(false);
   const [snapshots, setSnapshots] = useState<BalanceSnapshot[]>([]);
   const [loadingSnapshots, setLoadingSnapshots] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Fetch snapshots when period changes
   useEffect(() => {
@@ -107,6 +110,33 @@ export default function BalanceSheetIndex() {
     await refresh();
     await fetchSnapshots();
     setRefreshing(false);
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+
+    try {
+      const { success, error } = await exportToCSV({
+        assets,
+        liabilities,
+        netWorth,
+        totalAssets,
+        totalLiabilities,
+      });
+
+      if (success) {
+        Alert.alert(
+          'Export Successful',
+          'Your balance sheet has been exported and is ready to share.'
+        );
+      } else {
+        Alert.alert('Export Failed', error || 'Failed to export balance sheet');
+      }
+    } catch (error) {
+      Alert.alert('Export Failed', 'An unexpected error occurred');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const formatCurrency = (amount: number): string => {
@@ -211,10 +241,21 @@ export default function BalanceSheetIndex() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
+          <View style={styles.headerLeft}>
             <Text style={styles.title}>Balance Sheet</Text>
             <Text style={styles.subtitle}>Your financial position</Text>
           </View>
+          <TouchableOpacity
+            style={styles.exportButton}
+            onPress={handleExport}
+            disabled={isExporting || (assets.length === 0 && liabilities.length === 0)}
+          >
+            {isExporting ? (
+              <ActivityIndicator size="small" color={Colors.light.primary} />
+            ) : (
+              <Text style={styles.exportButtonText}>Export</Text>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Time Period Selector */}
@@ -455,9 +496,15 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundSecondary,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.sm,
+  },
+  headerLeft: {
+    flex: 1,
   },
   title: {
     fontSize: Typography.fontSize.xxxl,
@@ -468,6 +515,22 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     marginTop: Spacing.xs,
     fontSize: Typography.fontSize.base,
+  },
+  exportButton: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
+    borderColor: Colors.light.primary,
+    backgroundColor: Colors.light.surface,
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  exportButtonText: {
+    color: Colors.light.primary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.sm,
   },
 
   // Period Selector
