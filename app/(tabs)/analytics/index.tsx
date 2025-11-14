@@ -5,7 +5,8 @@ import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 
 export default function AnalyticsIndex() {
   const router = useRouter();
@@ -27,7 +28,8 @@ export default function AnalyticsIndex() {
         <ThemedText
           type="title"
           style={{
-            fontFamily: Fonts.rounded,
+            fontSize: Typography.fontSize.xxxl,
+            fontWeight: Typography.fontWeight.bold,
           }}>
           Analytics
         </ThemedText>
@@ -91,26 +93,112 @@ export default function AnalyticsIndex() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
+    color: Colors.light.primary,
     bottom: -70,
     left: -20,
     position: 'absolute',
   },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  section: { marginTop: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
-  row: { flexDirection: 'row', gap: 8 },
-  pill: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 9999 },
-  pillText: { color: '#fff', fontWeight: '700' },
-  barRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 100, marginTop: 10 },
-  bar: { width: 12, backgroundColor: '#111', borderRadius: 6 },
-  caption: { color: '#666', marginTop: 8 },
-  card: { backgroundColor: '#fff', borderRadius: 16, padding: 12, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
-  listRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
-  listLabel: { color: '#333' },
-  listValue: { fontWeight: '700' },
-  progressTrack: { height: 10, backgroundColor: '#eee', borderRadius: 6, overflow: 'hidden' },
-  progressFill: { height: 10, backgroundColor: '#111' },
-  primaryButton: { backgroundColor: '#111', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
-  primaryButtonText: { color: '#fff', fontWeight: '600' },
+  titleRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: Spacing.sm,
+  },
+  section: { 
+    marginTop: Spacing.lg,
+  },
+  sectionTitle: { 
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+    marginBottom: Spacing.sm,
+    color: Colors.light.text,
+  },
+  row: { 
+    flexDirection: 'row', 
+    gap: Spacing.sm,
+  },
+  pill: { 
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  pillText: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.bold,
+    fontSize: Typography.fontSize.sm,
+  },
+  barRow: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-end', 
+    gap: Spacing.xs,
+    height: 100, 
+    marginTop: Spacing.sm,
+    justifyContent: 'space-around',
+  },
+  bar: { 
+    width: 24,
+    backgroundColor: Colors.light.primary,
+    borderRadius: BorderRadius.sm,
+  },
+  caption: { 
+    color: Colors.light.textSecondary,
+    marginTop: Spacing.sm,
+    fontSize: Typography.fontSize.sm,
+  },
+  card: { 
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.xxl,
+    padding: Spacing.md,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  listRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+  },
+  listLabel: { 
+    color: Colors.light.text,
+    fontSize: Typography.fontSize.base,
+  },
+  listValue: { 
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+    fontSize: Typography.fontSize.base,
+  },
+  progressTrack: { 
+    height: 12,
+    backgroundColor: Colors.light.border,
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+  },
+  progressFill: { 
+    height: 12,
+    backgroundColor: Colors.light.primary,
+  },
+  primaryButton: { 
+    backgroundColor: Colors.light.primary,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  primaryButtonText: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.sm,
+  },
 });

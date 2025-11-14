@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 
 
 export default function Reports() {
@@ -31,19 +33,58 @@ export default function Reports() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 12 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-    backgroundColor: '#fafafa',
+  container: { 
+    flex: 1, 
+    padding: Spacing.md,
+    backgroundColor: Colors.light.backgroundSecondary,
   },
-  primaryButton: { backgroundColor: '#111', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 10, alignSelf: 'flex-start' },
-  primaryButtonText: { color: '#fff', fontWeight: '600' },
-  secondaryButton: { paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, alignSelf: 'flex-start', marginTop: 10 },
-  secondaryButtonText: { color: '#111', fontWeight: '600' },
+  title: { 
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    marginBottom: Spacing.lg,
+    color: Colors.light.text,
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    marginBottom: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    fontSize: Typography.fontSize.base,
+    color: Colors.light.text,
+  },
+  primaryButton: { 
+    backgroundColor: Colors.light.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    alignSelf: 'flex-start',
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  primaryButtonText: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.base,
+  },
+  secondaryButton: { 
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    alignSelf: 'flex-start', 
+    marginTop: Spacing.sm,
+    backgroundColor: Colors.light.surface,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+  },
+  secondaryButtonText: { 
+    color: Colors.light.text,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.sm,
+  },
 });

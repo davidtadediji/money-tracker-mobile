@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 
 export default function AddTransaction() {
   const router = useRouter();
@@ -72,32 +74,85 @@ export default function AddTransaction() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-  backButton: { paddingVertical: 6, paddingHorizontal: 8 },
-  backText: { color: '#111', fontSize: 16, fontWeight: '600' },
-  title: { fontSize: 22, fontWeight: '700', marginBottom: 12 },
+  container: { 
+    flex: 1, 
+    padding: Spacing.md,
+    backgroundColor: Colors.light.backgroundSecondary,
+  },
+  header: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  backButton: { 
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+  },
+  backText: { 
+    color: Colors.light.primary,
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  title: { 
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    marginBottom: Spacing.md,
+    color: Colors.light.text,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-    backgroundColor: '#fafafa',
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    marginBottom: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    fontSize: Typography.fontSize.base,
+    color: Colors.light.text,
   },
-  typeRow: { flexDirection: 'row', gap: 8, marginBottom: 12 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16, borderWidth: 1, borderColor: '#ccc' },
-  chipActive: { backgroundColor: '#111', borderColor: '#111' },
-  chipText: { color: '#111' },
-  chipTextActive: { color: '#fff' },
+  typeRow: { 
+    flexDirection: 'row', 
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  chip: { 
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surface,
+  },
+  chipActive: { 
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
+  },
+  chipText: { 
+    color: Colors.light.textSecondary,
+    fontWeight: Typography.fontWeight.medium,
+    fontSize: Typography.fontSize.sm,
+  },
+  chipTextActive: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+  },
   primaryButton: {
-    backgroundColor: '#111',
-    borderRadius: 10,
-    paddingVertical: 12,
+    backgroundColor: Colors.light.primary,
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.md,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: Spacing.sm,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
   },
-  primaryButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  primaryButtonText: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.base,
+  },
 });
 

@@ -532,7 +532,7 @@ export async function createBalanceSnapshot(
 
     const date = snapshotDate || new Date().toISOString().split('T')[0];
 
-    const { data, error } = await supabase.rpc('create_balance_snapshot', {
+    const { data, error } = await (supabase.rpc as any)('create_balance_snapshot', {
       p_user_id: userId,
       p_snapshot_date: date,
     });

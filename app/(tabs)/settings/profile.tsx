@@ -1,5 +1,7 @@
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
+import { Colors } from '@/constants/theme';
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -68,30 +70,73 @@ export default function ProfileScreen() {
         />
       </View>
 
-      <Button title="Save" onPress={handleSave} />
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Profile</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 16 },
-  header: { fontSize: 20, fontWeight: '600' },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignSelf: 'center',
-    backgroundColor: '#ddd',
-    marginVertical: 4,
+  container: { 
+    flex: 1, 
+    padding: Spacing.md,
+    gap: Spacing.md,
+    backgroundColor: Colors.light.backgroundSecondary,
   },
-  group: { gap: 8 },
-  label: { fontSize: 16 },
+  header: { 
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: BorderRadius.full,
+    alignSelf: 'center',
+    backgroundColor: Colors.light.secondaryLight,
+    marginVertical: Spacing.sm,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  group: { 
+    gap: Spacing.sm,
+  },
+  label: { 
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.light.text,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    fontSize: Typography.fontSize.base,
+    color: Colors.light.text,
+  },
+  saveButton: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  saveButtonText: {
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.base,
   },
 });
 

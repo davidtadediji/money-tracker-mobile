@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Colors } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 
 export default function SettingsIndex() {
   const router = useRouter();
@@ -27,11 +29,45 @@ export default function SettingsIndex() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: '700' },
-  subtitle: { color: '#666', marginTop: 4 },
-  item: { paddingVertical: 12 },
-  itemTitle: { fontSize: 16, fontWeight: '600' },
-  itemSubtitle: { color: '#666', marginTop: 2 },
-  separator: { height: 1, backgroundColor: '#eee' },
+  container: { 
+    flex: 1, 
+    padding: Spacing.md,
+    backgroundColor: Colors.light.backgroundSecondary,
+  },
+  title: { 
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+  },
+  subtitle: { 
+    color: Colors.light.textSecondary,
+    marginTop: Spacing.xs,
+    fontSize: Typography.fontSize.base,
+  },
+  item: { 
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.sm,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  itemTitle: { 
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.light.text,
+  },
+  itemSubtitle: { 
+    color: Colors.light.textSecondary,
+    marginTop: 2,
+    fontSize: Typography.fontSize.sm,
+  },
+  separator: { 
+    height: 1, 
+    backgroundColor: 'transparent',
+  },
 });

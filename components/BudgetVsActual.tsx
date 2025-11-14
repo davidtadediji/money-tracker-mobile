@@ -1,5 +1,6 @@
 import { getCategoryIcon } from '@/constants/categories';
 import { supabase } from '@/lib/supabase';
+import { Transaction } from '@/types/database';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
 
@@ -118,7 +119,7 @@ export default function BudgetVsActual({
       }
 
       // Calculate total spent
-      const totalSpent = transactions?.reduce((sum, transaction) => {
+      const totalSpent = transactions?.reduce((sum: number, transaction: Transaction) => {
         return sum + transaction.amount;
       }, 0) || 0;
 

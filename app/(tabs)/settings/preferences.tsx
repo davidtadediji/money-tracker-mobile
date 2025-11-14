@@ -6,9 +6,10 @@ import {
   Switch,
   TouchableOpacity,
   StyleSheet,
-  Button,
 } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 
 export default function PreferencesScreen() {
   const [currency, setCurrency] = useState("USD");
@@ -49,22 +50,42 @@ export default function PreferencesScreen() {
 
       <View style={styles.row}>
         <Text style={styles.label}>Dark Mode</Text>
-        <Switch value={darkMode} onValueChange={setDarkMode} />
+        <Switch 
+          value={darkMode} 
+          onValueChange={setDarkMode}
+          trackColor={{ false: Colors.light.border, true: Colors.light.primaryLight }}
+          thumbColor={darkMode ? Colors.light.primary : Colors.light.surface}
+        />
       </View>
 
       <View style={styles.row}>
         <Text style={styles.label}>Notifications</Text>
-        <Switch value={notifications} onValueChange={setNotifications} />
+        <Switch 
+          value={notifications} 
+          onValueChange={setNotifications}
+          trackColor={{ false: Colors.light.border, true: Colors.light.primaryLight }}
+          thumbColor={notifications ? Colors.light.primary : Colors.light.surface}
+        />
       </View>
 
       <View style={styles.row}>
         <Text style={styles.label}>OCR for Receipts</Text>
-        <Switch value={ocrEnabled} onValueChange={setOcrEnabled} />
+        <Switch 
+          value={ocrEnabled} 
+          onValueChange={setOcrEnabled}
+          trackColor={{ false: Colors.light.border, true: Colors.light.primaryLight }}
+          thumbColor={ocrEnabled ? Colors.light.primary : Colors.light.surface}
+        />
       </View>
 
       <View style={styles.row}>
         <Text style={styles.label}>Voice Entry</Text>
-        <Switch value={voiceEnabled} onValueChange={setVoiceEnabled} />
+        <Switch 
+          value={voiceEnabled} 
+          onValueChange={setVoiceEnabled}
+          trackColor={{ false: Colors.light.border, true: Colors.light.primaryLight }}
+          thumbColor={voiceEnabled ? Colors.light.primary : Colors.light.surface}
+        />
       </View>
 
       <View style={styles.group}>
@@ -89,38 +110,95 @@ export default function PreferencesScreen() {
         </View>
       </View>
 
-      <Button title="Save" onPress={handleSave} />
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Preferences</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 16 },
-  header: { fontSize: 20, fontWeight: "600" },
-  group: { gap: 8 },
+  container: { 
+    flex: 1, 
+    padding: Spacing.md,
+    gap: Spacing.md,
+    backgroundColor: Colors.light.backgroundSecondary,
+  },
+  header: { 
+    fontSize: Typography.fontSize.xxxl,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+  },
+  group: { 
+    gap: Spacing.sm,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 8,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.xs,
   },
-  label: { fontSize: 16 },
+  label: { 
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.medium,
+    color: Colors.light.text,
+  },
   input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.light.surface,
+    fontSize: Typography.fontSize.base,
+    color: Colors.light.text,
   },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  chips: { 
+    flexDirection: "row", 
+    flexWrap: "wrap", 
+    gap: Spacing.sm,
+  },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 2,
+    borderColor: Colors.light.border,
+    backgroundColor: Colors.light.surface,
   },
-  chipActive: { backgroundColor: "#111", borderColor: "#111" },
-  chipText: { color: "#111" },
-  chipTextActive: { color: "#fff" },
+  chipActive: { 
+    backgroundColor: Colors.light.primary,
+    borderColor: Colors.light.primary,
+  },
+  chipText: { 
+    color: Colors.light.textSecondary,
+    fontWeight: Typography.fontWeight.medium,
+    fontSize: Typography.fontSize.sm,
+  },
+  chipTextActive: { 
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  saveButton: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  saveButtonText: {
+    color: Colors.light.onPrimary,
+    fontWeight: Typography.fontWeight.semibold,
+    fontSize: Typography.fontSize.base,
+  },
 });
