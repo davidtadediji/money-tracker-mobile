@@ -1,48 +1,55 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-
-/*
-// Google Auth (Expo AuthSession) — stub/example
-// 1) Install: expo install expo-auth-session expo-web-browser
-// 2) Add your client IDs below, then replace the placeholder handler to call promptAsync().
-
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { useEffect } from 'react';
-
-WebBrowser.maybeCompleteAuthSession();
-
-function useGoogleAuth() {
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '<EXPO_CLIENT_ID>',
-    iosClientId: '<IOS_CLIENT_ID>',
-    androidClientId: '<ANDROID_CLIENT_ID>',
-    webClientId: '<WEB_CLIENT_ID>',
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response; // access_token etc.
-      // TODO: send token to backend / create session
-      console.log('Google auth success', authentication);
-    }
-  }, [response]);
-
-  return { request, promptAsync };
-}
-
-// In component:
-// const { request, promptAsync } = useGoogleAuth();
-// <Button title="Continue with Google" disabled={!request} onPress={() => promptAsync()} />
-*/
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { useRouter, Link } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginScreen() {
+  const router = useRouter();
+  const { signIn, loading: authLoading } = useAuth();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '' });
 
-  const handleLogin = () => {
-    // Add login logic here
-    console.log('Logging in with:', email, password);
+  const validateForm = () => {
+    const newErrors = { email: '', password: '' };
+    let isValid = true;
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleLogin = async () => {
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+      const { success, error } = await signIn(email, password);
+
+      if (success) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Login Failed', error || 'Unable to sign in. Please check your credentials.');
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,33 +59,60 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>Log in to track your cash flow and balance</Text>
 
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.email ? styles.inputError : null]}
           placeholder="Email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            setErrors({ ...errors, email: '' });
+          }}
           autoCapitalize="none"
           keyboardType="email-address"
           placeholderTextColor="#777"
+          editable={!loading && !authLoading}
         />
+        {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+
         <TextInput
-          style={styles.input}
+          style={[styles.input, errors.password ? styles.inputError : null]}
           placeholder="Password"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => {
+            setPassword(text);
+            setErrors({ ...errors, password: '' });
+          }}
           secureTextEntry
           placeholderTextColor="#777"
+          editable={!loading && !authLoading}
         />
+        {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-          <Text style={styles.primaryButtonText}>Log In</Text>
-        </TouchableOpacity>
+        <Link href="/auth/reset-password" asChild>
+          <TouchableOpacity disabled={loading || authLoading}>
+            <Text style={styles.forgotPassword}>Forgot password?</Text>
+          </TouchableOpacity>
+        </Link>
 
-        <TouchableOpacity
-          style={styles.secondaryButton}
-          onPress={() => console.log('Login with Google')}
+        <TouchableOpacity 
+          style={[styles.primaryButton, (loading || authLoading) && styles.buttonDisabled]} 
+          onPress={handleLogin}
+          disabled={loading || authLoading}
         >
-          <Text style={styles.secondaryButtonText}>Continue with Google</Text>
+          {loading || authLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Log In</Text>
+          )}
         </TouchableOpacity>
+
+        <View style={styles.signupContainer}>
+          <Text style={styles.signupText}>Don't have an account? </Text>
+          <Link href="/auth/signup" asChild>
+            <TouchableOpacity disabled={loading || authLoading}>
+              <Text style={styles.signupLink}>Sign Up</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
       </View>
     </View>
   );
@@ -112,8 +146,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    marginBottom: 12,
+    marginBottom: 4,
     backgroundColor: '#fafafa',
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginBottom: 8,
+    marginTop: -2,
+  },
+  forgotPassword: {
+    color: '#111',
+    fontSize: 14,
+    textAlign: 'right',
+    marginBottom: 12,
+    fontWeight: '500',
   },
   primaryButton: {
     backgroundColor: '#111',
@@ -123,13 +173,21 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   primaryButtonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  secondaryButton: {
-    borderColor: '#111',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 12,
+  buttonDisabled: {
+    opacity: 0.6,
   },
-  secondaryButtonText: { color: '#111', fontWeight: '600', fontSize: 16 },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  signupText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  signupLink: {
+    color: '#111',
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

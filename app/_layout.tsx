@@ -1,4 +1,5 @@
 import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
 import { RecurringTransactionProvider } from "@/contexts/RecurringTransactionContext";
@@ -25,27 +26,29 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <BalanceSheetProvider>
-          <BudgetProvider>
-            <TransactionProvider>
-              <RecurringTransactionProvider>
-                <AnalyticsProvider>
-                  <SmartEntryProvider>
-                    <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-                      <Stack.Screen name="index" options={{ headerShown: false }} />
-                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                      <Stack.Screen
-                        name="modal"
-                        options={{ presentation: "modal", title: "Modal" }}
-                      />
-                    </Stack>
-                    <StatusBar style="auto" />
-                  </SmartEntryProvider>
-                </AnalyticsProvider>
-              </RecurringTransactionProvider>
-            </TransactionProvider>
-          </BudgetProvider>
-        </BalanceSheetProvider>
+        <AuthProvider>
+          <BalanceSheetProvider>
+            <BudgetProvider>
+              <TransactionProvider>
+                <RecurringTransactionProvider>
+                  <AnalyticsProvider>
+                    <SmartEntryProvider>
+                      <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                        <Stack.Screen name="index" options={{ headerShown: false }} />
+                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        <Stack.Screen
+                          name="modal"
+                          options={{ presentation: "modal", title: "Modal" }}
+                        />
+                      </Stack>
+                      <StatusBar style="auto" />
+                    </SmartEntryProvider>
+                  </AnalyticsProvider>
+                </RecurringTransactionProvider>
+              </TransactionProvider>
+            </BudgetProvider>
+          </BalanceSheetProvider>
+        </AuthProvider>
       </ThemeProvider>
     </SafeAreaProvider>
 

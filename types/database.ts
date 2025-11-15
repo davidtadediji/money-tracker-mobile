@@ -424,6 +424,163 @@ export interface Database {
           }
         ]
       }
+      user_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          full_name: string | null
+          display_name: string | null
+          avatar_url: string | null
+          bio: string | null
+          phone_number: string | null
+          onboarding_completed: boolean
+          profile_setup_completed: boolean
+          is_active: boolean
+          email_verified: boolean
+          preferred_language: string
+          timezone: string
+          last_login_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          full_name?: string | null
+          display_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          phone_number?: string | null
+          onboarding_completed?: boolean
+          profile_setup_completed?: boolean
+          is_active?: boolean
+          email_verified?: boolean
+          preferred_language?: string
+          timezone?: string
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          full_name?: string | null
+          display_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          phone_number?: string | null
+          onboarding_completed?: boolean
+          profile_setup_completed?: boolean
+          is_active?: boolean
+          email_verified?: boolean
+          preferred_language?: string
+          timezone?: string
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      user_settings: {
+        Row: {
+          id: string
+          user_id: string
+          display_name: string | null
+          email_notifications: boolean
+          push_notifications: boolean
+          transaction_reminders: boolean
+          budget_alerts: boolean
+          recurring_reminders: boolean
+          reminder_time: string
+          currency_code: string
+          currency_symbol: string
+          decimal_places: number
+          theme: 'light' | 'dark' | 'auto'
+          accent_color: string
+          auto_backup: boolean
+          backup_frequency: 'daily' | 'weekly' | 'monthly'
+          last_backup_date: string | null
+          default_view: 'dashboard' | 'transactions' | 'budget' | 'analytics' | 'balance' | 'settings'
+          default_transaction_type: 'income' | 'expense'
+          biometric_enabled: boolean
+          passcode_enabled: boolean
+          show_balance: boolean
+          compact_view: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          display_name?: string | null
+          email_notifications?: boolean
+          push_notifications?: boolean
+          transaction_reminders?: boolean
+          budget_alerts?: boolean
+          recurring_reminders?: boolean
+          reminder_time?: string
+          currency_code?: string
+          currency_symbol?: string
+          decimal_places?: number
+          theme?: 'light' | 'dark' | 'auto'
+          accent_color?: string
+          auto_backup?: boolean
+          backup_frequency?: 'daily' | 'weekly' | 'monthly'
+          last_backup_date?: string | null
+          default_view?: 'dashboard' | 'transactions' | 'budget' | 'analytics' | 'balance' | 'settings'
+          default_transaction_type?: 'income' | 'expense'
+          biometric_enabled?: boolean
+          passcode_enabled?: boolean
+          show_balance?: boolean
+          compact_view?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          display_name?: string | null
+          email_notifications?: boolean
+          push_notifications?: boolean
+          transaction_reminders?: boolean
+          budget_alerts?: boolean
+          recurring_reminders?: boolean
+          reminder_time?: string
+          currency_code?: string
+          currency_symbol?: string
+          decimal_places?: number
+          theme?: 'light' | 'dark' | 'auto'
+          accent_color?: string
+          auto_backup?: boolean
+          backup_frequency?: 'daily' | 'weekly' | 'monthly'
+          last_backup_date?: string | null
+          default_view?: 'dashboard' | 'transactions' | 'budget' | 'analytics' | 'balance' | 'settings'
+          default_transaction_type?: 'income' | 'expense'
+          biometric_enabled?: boolean
+          passcode_enabled?: boolean
+          show_balance?: boolean
+          compact_view?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -472,4 +629,12 @@ export type SmartEntryUpdate = Database['public']['Tables']['smart_entries']['Up
 export type RecurringTransaction = Database['public']['Tables']['recurring_transactions']['Row']
 export type RecurringTransactionInsert = Database['public']['Tables']['recurring_transactions']['Insert']
 export type RecurringTransactionUpdate = Database['public']['Tables']['recurring_transactions']['Update']
+
+export type UserSettings = Database['public']['Tables']['user_settings']['Row']
+export type UserSettingsInsert = Database['public']['Tables']['user_settings']['Insert']
+export type UserSettingsUpdate = Database['public']['Tables']['user_settings']['Update']
+
+export type UserProfile = Database['public']['Tables']['user_profiles']['Row']
+export type UserProfileInsert = Database['public']['Tables']['user_profiles']['Insert']
+export type UserProfileUpdate = Database['public']['Tables']['user_profiles']['Update']
 
