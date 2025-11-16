@@ -248,7 +248,7 @@ export default function BalanceSheetIndex() {
           <View style={styles.headerButtons}>
             <TouchableOpacity
               style={styles.settingsButton}
-              onPress={() => router.push('/(tabs)/balance-sheet/settings')}
+              onPress={() => router.push('/(tabs)/transactions/balance/settings')}
             >
               <Text style={styles.settingsButtonIcon}>⚙️</Text>
             </TouchableOpacity>
@@ -381,7 +381,7 @@ export default function BalanceSheetIndex() {
             </View>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => router.push('/(tabs)/balance-sheet/add-asset')}
+              onPress={() => router.push('/(tabs)/transactions/balance/add-asset')}
             >
               <Text style={styles.addButtonText}>+ Add Asset</Text>
             </TouchableOpacity>
@@ -399,7 +399,7 @@ export default function BalanceSheetIndex() {
                 <TouchableOpacity
                   key={asset.id}
                   style={styles.itemCard}
-                  onPress={() => router.push(`/(tabs)/balance-sheet/asset/${asset.id}`)}
+                  onPress={() => router.push(`/(tabs)/transactions/balance/asset/${asset.id}`)}
                 >
                   <View style={styles.itemLeft}>
                     <Text style={styles.itemIcon}>
@@ -428,7 +428,7 @@ export default function BalanceSheetIndex() {
             </View>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => router.push('/(tabs)/balance-sheet/add-liability')}
+              onPress={() => router.push('/(tabs)/transactions/balance/add-liability')}
             >
               <Text style={styles.addButtonText}>+ Add Liability</Text>
             </TouchableOpacity>
@@ -446,7 +446,7 @@ export default function BalanceSheetIndex() {
                 <TouchableOpacity
                   key={liability.id}
                   style={styles.itemCard}
-                  onPress={() => router.push(`/(tabs)/balance-sheet/liability/${liability.id}`)}
+                  onPress={() => router.push(`/(tabs)/transactions/balance/liability/${liability.id}`)}
                 >
                   <View style={styles.itemLeft}>
                     <Text style={styles.itemIcon}>

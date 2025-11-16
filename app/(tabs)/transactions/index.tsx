@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTransactions } from '@/contexts/TransactionContext';
+import { useBalanceSheet } from '@/contexts/BalanceSheetContext';
 import { Colors } from '@/constants/theme';
 import { BorderRadius, Spacing, Typography } from '@/constants/designTokens';
 import { Transaction } from '@/types/database';
@@ -22,6 +23,15 @@ type SortOption = 'date' | 'amount';
 export default function TransactionsIndex() {
   const router = useRouter();
   const { transactions, loading, error, refreshTransactions, deleteTransaction, stats } = useTransactions();
+  const {
+    assets,
+    liabilities,
+    totalAssets,
+    totalLiabilities,
+    netWorth,
+    loading: balanceLoading,
+    refresh: refreshBalance,
+  } = useBalanceSheet();
 
   const [refreshing, setRefreshing] = useState(false);
   const [filterType, setFilterType] = useState<FilterType>('all');
@@ -50,7 +60,7 @@ export default function TransactionsIndex() {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await refreshTransactions();
+    await Promise.all([refreshTransactions(), refreshBalance()]);
     setRefreshing(false);
   };
 
@@ -185,7 +195,36 @@ export default function TransactionsIndex() {
         </View>
       </View>
 
-      {/* Stats Cards */}
+      {/* Balance Summary Card */}
+      <View style={styles.balanceCard}>
+        <View style={styles.balanceHeader}>
+          <Text style={styles.balanceTitle}>Net Worth</Text>
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/transactions/balance')}
+            style={styles.viewDetailsButton}
+          >
+            <Text style={styles.viewDetailsText}>View Details →</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={[styles.netWorthValue, { color: netWorth >= 0 ? Colors.light.success : Colors.light.error }]}>
+          {netWorth >= 0 ? '' : '-'}{formatCurrency(Math.abs(netWorth))}
+        </Text>
+        <View style={styles.balanceBreakdown}>
+          <View style={styles.balanceItem}>
+            <Text style={styles.balanceItemLabel}>Assets</Text>
+            <Text style={styles.balanceItemValue}>{formatCurrency(totalAssets)}</Text>
+          </View>
+          <View style={styles.balanceDivider} />
+          <View style={styles.balanceItem}>
+            <Text style={styles.balanceItemLabel}>Liabilities</Text>
+            <Text style={[styles.balanceItemValue, { color: Colors.light.error }]}>
+              {formatCurrency(totalLiabilities)}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Transaction Stats Cards */}
       {stats && (
         <View style={styles.statsContainer}>
           <View style={[styles.statCard, { backgroundColor: Colors.light.successBackground }]}>
@@ -397,6 +436,70 @@ const styles = StyleSheet.create({
     color: Colors.light.onPrimary,
     fontWeight: Typography.fontWeight.semibold,
     fontSize: 12,
+  },
+
+  // Balance Card
+  balanceCard: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    padding: Spacing.lg,
+    backgroundColor: Colors.light.surface,
+    borderRadius: BorderRadius.xxl,
+    shadowColor: Colors.light.shadow,
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  balanceTitle: {
+    fontSize: Typography.fontSize.base,
+    fontWeight: Typography.fontWeight.semibold,
+    color: Colors.light.textSecondary,
+  },
+  viewDetailsButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  viewDetailsText: {
+    fontSize: Typography.fontSize.sm,
+    color: Colors.light.primary,
+    fontWeight: Typography.fontWeight.semibold,
+  },
+  netWorthValue: {
+    fontSize: Typography.fontSize.hero,
+    fontWeight: Typography.fontWeight.extrabold,
+    marginBottom: Spacing.md,
+  },
+  balanceBreakdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  balanceItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  balanceItemLabel: {
+    fontSize: Typography.fontSize.xs,
+    color: Colors.light.textSecondary,
+    marginBottom: 4,
+    fontWeight: Typography.fontWeight.medium,
+  },
+  balanceItemValue: {
+    fontSize: Typography.fontSize.lg,
+    fontWeight: Typography.fontWeight.bold,
+    color: Colors.light.text,
+  },
+  balanceDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: Colors.light.border,
   },
 
   // Stats
