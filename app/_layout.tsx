@@ -2,8 +2,10 @@ import { AnalyticsProvider } from "@/contexts/AnalyticsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BalanceSheetProvider } from "@/contexts/BalanceSheetContext";
 import { BudgetProvider } from "@/contexts/BudgetContext";
+import { GoalsProvider } from "@/contexts/GoalsContext";
 import { RecurringTransactionProvider } from "@/contexts/RecurringTransactionContext";
 import { SmartEntryProvider } from "@/contexts/SmartEntryContext";
+import { SupportProvider } from "@/contexts/SupportContext";
 import { TransactionProvider } from "@/contexts/TransactionContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -33,15 +35,19 @@ export default function RootLayout() {
                 <RecurringTransactionProvider>
                   <AnalyticsProvider>
                     <SmartEntryProvider>
-                      <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
-                        <Stack.Screen name="index" options={{ headerShown: false }} />
-                        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                        <Stack.Screen
-                          name="modal"
-                          options={{ presentation: "modal", title: "Modal" }}
-                        />
-                      </Stack>
-                      <StatusBar style="auto" />
+                      <SupportProvider>
+                        <GoalsProvider>
+                          <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                            <Stack.Screen name="index" options={{ headerShown: false }} />
+                            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                            <Stack.Screen
+                              name="modal"
+                              options={{ presentation: "modal", title: "Modal" }}
+                            />
+                          </Stack>
+                          <StatusBar style="auto" />
+                        </GoalsProvider>
+                      </SupportProvider>
                     </SmartEntryProvider>
                   </AnalyticsProvider>
                 </RecurringTransactionProvider>
